@@ -1,0 +1,14 @@
+// test.c - sample input for scanner
+int main() {
+    int x = 10;
+    int y = 20;
+    int sum = x + y;
+
+    if (sum > 20) {
+        sum = sum - 5;
+    } else {
+        sum = sum + 5;
+    }
+
+    return sum;
+}

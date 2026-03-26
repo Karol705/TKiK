@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Syntax Highlighted C</title>
+  <style>
+    body  { background: #1e1e1e; margin: 0; padding: 1.5rem; }
+    pre   {
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #d4d4d4;
+      background: #1e1e1e;
+      margin: 0;
+    }
+    .kw   { color: #569cd6; }   /* keywords              */
+    .pp   { color: #c586c0; }   /* preprocessor          */
+    .cmt  { color: #6a9955; }   /* comments              */
+    .str  { color: #ce9178; }   /* string/char literals  */
+    .num  { color: #b5cea8; }   /* numeric literals      */
+    .id   { color: #9cdcfe; }   /* identifiers           */
+    .op   { color: #d4d4d4; }   /* operators             */
+    .br   { color: #ffd700; }   /* brackets              */
+    .punct{ color: #d4d4d4; }   /* punctuation           */
+    .unk  { color: #f44747; }   /* unknown characters    */
+  </style>
+</head>
+<body><pre>
+<span class="cmt">// test.c - sample input for scanner</span>
+<span class="kw">int</span> <span class="id">main</span><span class="br">(</span><span class="br">)</span> <span class="br">{</span>
+    <span class="kw">int</span> <span class="id">x</span> <span class="op">=</span> <span class="num">10</span><span class="punct">;</span>
+    <span class="kw">int</span> <span class="id">y</span> <span class="op">=</span> <span class="num">20</span><span class="punct">;</span>
+    <span class="kw">int</span> <span class="id">sum</span> <span class="op">=</span> <span class="id">x</span> <span class="op">+</span> <span class="id">y</span><span class="punct">;</span>
+
+    <span class="kw">if</span> <span class="br">(</span><span class="id">sum</span> <span class="op">&gt;</span> <span class="num">20</span><span class="br">)</span> <span class="br">{</span>
+        <span class="id">sum</span> <span class="op">=</span> <span class="id">sum</span> <span class="op">-</span> <span class="num">5</span><span class="punct">;</span>
+    <span class="br">}</span> <span class="kw">else</span> <span class="br">{</span>
+        <span class="id">sum</span> <span class="op">=</span> <span class="id">sum</span> <span class="op">+</span> <span class="num">5</span><span class="punct">;</span>
+    <span class="br">}</span>
+
+    <span class="kw">return</span> <span class="id">sum</span><span class="punct">;</span>
+<span class="br">}</span></pre></body></html>
