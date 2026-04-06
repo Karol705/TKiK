@@ -1,0 +1,341 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    KW_ELSE
+    KW_EXTERN
+    KW_FOR
+    KW_IF
+    KW_IN
+    KW_LOOP
+    KW_MATCH
+    KW_MOVE
+    KW_REF
+    KW_STATIC
+    KW_UNSAFE
+    KW_WHILE
+    LIFETIME_ANON
+    LIT_BYTE
+    LIT_BYTE_STR
+    OP_AT
+    OP_CARET
+    OP_FAT_ARROW
+    OP_PIPE
+    OP_SHL
+    OP_SHR
+    OP_TILDE
+    UNDERSCORE
+
+Grammar
+
+Rule 0     S' -> empty
+Rule 1     empty -> <empty>
+Rule 2     program -> program item
+Rule 3     program -> empty
+Rule 4     item -> fn_def
+Rule 5     item -> struct_def
+Rule 6     item -> impl_block
+Rule 7     item -> use_decl
+Rule 8     item -> type_alias
+Rule 9     item -> const_def
+Rule 10    item -> mod_block
+Rule 11    item -> attr item
+Rule 12    attr -> OP_HASH LBRACKET attr_body RBRACKET
+Rule 13    attr_body -> IDENT
+Rule 14    attr_body -> IDENT LPAREN attr_args RPAREN
+Rule 15    attr_args -> attr_args IDENT
+Rule 16    attr_args -> empty
+Rule 17    visibility -> KW_PUB
+Rule 18    visibility -> KW_PUB LPAREN KW_SELF RPAREN
+Rule 19    visibility -> KW_PUB LPAREN IDENT RPAREN
+Rule 20    visibility -> empty
+Rule 21    fn_def -> visibility KW_FN IDENT generic_params_opt LPAREN param_list_opt RPAREN return_type_opt where_clause_opt block
+Rule 22    param_list_opt -> param_list
+Rule 23    param_list_opt -> empty
+Rule 24    param_list -> param
+Rule 25    param_list -> param_list COMMA param
+Rule 26    param -> KW_SELF
+Rule 27    param -> OP_AMP lifetime_opt KW_MUT_opt KW_SELF
+Rule 28    param -> pattern COLON type
+Rule 29    return_type_opt -> return_type
+Rule 30    return_type_opt -> empty
+Rule 31    return_type -> OP_ARROW type
+Rule 32    generic_params_opt -> generic_params
+Rule 33    generic_params_opt -> empty
+Rule 34    generic_params -> OP_LT generic_param_list OP_GT
+Rule 35    generic_param_list -> generic_param
+Rule 36    generic_param_list -> generic_param_list COMMA generic_param
+Rule 37    generic_param -> LIFETIME_IDENT
+Rule 38    generic_param -> IDENT
+Rule 39    generic_param -> IDENT COLON type
+Rule 40    where_clause_opt -> where_clause
+Rule 41    where_clause_opt -> empty
+Rule 42    where_clause -> IDENT where_pred_list
+Rule 43    where_pred_list -> where_pred
+Rule 44    where_pred_list -> where_pred_list COMMA where_pred
+Rule 45    where_pred -> type COLON type
+Rule 46    where_pred -> LIFETIME_IDENT COLON LIFETIME_IDENT
+Rule 47    struct_def -> visibility KW_STRUCT IDENT generic_params_opt struct_body
+Rule 48    struct_def -> visibility KW_STRUCT IDENT generic_params_opt SEMI
+Rule 49    struct_body -> LBRACE struct_fields_opt RBRACE
+Rule 50    struct_fields_opt -> struct_field
+Rule 51    struct_fields_opt -> struct_fields_opt COMMA struct_field
+Rule 52    struct_fields_opt -> empty
+Rule 53    struct_field -> visibility IDENT COLON type
+Rule 54    impl_block -> KW_IMPL generic_params_opt type LBRACE impl_items RBRACE
+Rule 55    impl_items -> impl_item
+Rule 56    impl_items -> impl_items impl_item
+Rule 57    impl_items -> empty
+Rule 58    impl_item -> fn_def
+Rule 59    impl_item -> type_alias
+Rule 60    impl_item -> attr impl_item
+Rule 61    use_decl -> visibility KW_USE use_tree SEMI
+Rule 62    use_tree -> path
+Rule 63    use_tree -> LBRACE use_tree_list RBRACE
+Rule 64    use_tree_list -> use_tree
+Rule 65    use_tree_list -> use_tree_list COMMA use_tree
+Rule 66    path -> IDENT
+Rule 67    path -> path OP_PATH IDENT
+Rule 68    type_alias -> visibility KW_TYPE IDENT OP_ASSIGN type SEMI
+Rule 69    const_def -> visibility KW_CONST IDENT COLON type OP_ASSIGN expr SEMI
+Rule 70    mod_block -> visibility KW_MOD IDENT LBRACE program RBRACE
+Rule 71    mod_block -> visibility KW_MOD IDENT SEMI
+Rule 72    block -> LBRACE stmt_list RBRACE
+Rule 73    stmt_list -> stmt
+Rule 74    stmt_list -> stmt_list stmt
+Rule 75    stmt_list -> empty
+Rule 76    stmt -> let_stmt
+Rule 77    stmt -> expr_stmt
+Rule 78    stmt -> return_stmt
+Rule 79    stmt -> break_stmt
+Rule 80    stmt -> continue_stmt
+Rule 81    stmt -> item
+Rule 82    let_stmt -> KW_LET KW_MUT_opt pattern SEMI
+Rule 83    expr_stmt -> expr SEMI
+Rule 84    return_stmt -> KW_RETURN expr_opt SEMI
+Rule 85    break_stmt -> KW_BREAK expr_opt SEMI
+Rule 86    continue_stmt -> KW_CONTINUE SEMI
+Rule 87    expr -> assign_expr
+Rule 88    assign_expr -> range_expr
+Rule 89    assign_expr -> range_expr assign_op assign_expr
+Rule 90    assign_op -> OP_ASSIGN
+Rule 91    assign_op -> OP_ADD_ASSIGN
+Rule 92    assign_op -> OP_SUB_ASSIGN
+Rule 93    assign_op -> OP_MUL_ASSIGN
+Rule 94    assign_op -> OP_DIV_ASSIGN
+Rule 95    assign_op -> OP_REM_ASSIGN
+Rule 96    range_expr -> or_expr
+Rule 97    range_expr -> or_expr OP_DOTDOT or_expr
+Rule 98    range_expr -> or_expr OP_DOTDOTEQ or_expr
+Rule 99    or_expr -> and_expr
+Rule 100   or_expr -> or_expr OP_OR_OR and_expr
+Rule 101   and_expr -> cmp_expr
+Rule 102   and_expr -> and_expr OP_AND_AND cmp_expr
+Rule 103   cmp_expr -> add_expr
+Rule 104   cmp_expr -> cmp_expr cmp_op add_expr
+Rule 105   cmp_op -> OP_EQ_EQ
+Rule 106   cmp_op -> OP_NE
+Rule 107   cmp_op -> OP_LT
+Rule 108   cmp_op -> OP_GT
+Rule 109   cmp_op -> OP_LE
+Rule 110   cmp_op -> OP_GE
+Rule 111   add_expr -> mul_expr
+Rule 112   add_expr -> add_expr OP_PLUS mul_expr
+Rule 113   add_expr -> add_expr OP_MINUS mul_expr
+Rule 114   mul_expr -> cast_expr
+Rule 115   mul_expr -> mul_expr OP_STAR cast_expr
+Rule 116   mul_expr -> mul_expr OP_SLASH cast_expr
+Rule 117   mul_expr -> mul_expr OP_PERCENT cast_expr
+Rule 118   cast_expr -> unary_expr
+Rule 119   cast_expr -> cast_expr KW_AS type
+Rule 120   unary_expr -> OP_MINUS unary_expr
+Rule 121   unary_expr -> OP_BANG unary_expr
+Rule 122   unary_expr -> OP_STAR unary_expr
+Rule 123   unary_expr -> postfix_expr
+Rule 124   postfix_expr -> primary_expr
+Rule 125   postfix_expr -> postfix_expr postfix_op
+Rule 126   postfix_op -> DOT IDENT
+Rule 127   postfix_op -> LPAREN RPAREN
+Rule 128   postfix_op -> OP_QUESTION
+Rule 129   primary_expr -> literal
+Rule 130   primary_expr -> IDENT
+Rule 131   primary_expr -> path
+Rule 132   primary_expr -> block
+Rule 133   primary_expr -> LPAREN expr RPAREN
+Rule 134   literal -> LIT_INT
+Rule 135   literal -> LIT_INT_HEX
+Rule 136   literal -> LIT_INT_BIN
+Rule 137   literal -> LIT_FLOAT
+Rule 138   literal -> LIT_STR
+Rule 139   literal -> LIT_STR_RAW
+Rule 140   literal -> LIT_CHAR
+Rule 141   literal -> KW_TRUE
+Rule 142   literal -> KW_FALSE
+Rule 143   type -> IDENT
+Rule 144   type -> OP_AMP type
+Rule 145   type -> OP_STAR type
+Rule 146   type -> LPAREN type RPAREN
+Rule 147   expr_opt -> expr
+Rule 148   expr_opt -> empty
+Rule 149   lifetime_opt -> LIFETIME_IDENT
+Rule 150   lifetime_opt -> empty
+Rule 151   KW_MUT_opt -> KW_MUT
+Rule 152   KW_MUT_opt -> empty
+
+Terminals, with rules where they appear
+
+COLON                : 28 39 45 46 53 69
+COMMA                : 25 36 44 51 65
+DOT                  : 126
+IDENT                : 13 14 15 19 21 38 39 42 47 48 53 66 67 68 69 70 71 126 130 143
+KW_AS                : 119
+KW_BREAK             : 85
+KW_CONST             : 69
+KW_CONTINUE          : 86
+KW_ELSE              : 
+KW_EXTERN            : 
+KW_FALSE             : 142
+KW_FN                : 21
+KW_FOR               : 
+KW_IF                : 
+KW_IMPL              : 54
+KW_IN                : 
+KW_LET               : 82
+KW_LOOP              : 
+KW_MATCH             : 
+KW_MOD               : 70 71
+KW_MOVE              : 
+KW_MUT               : 151
+KW_PUB               : 17 18 19
+KW_REF               : 
+KW_RETURN            : 84
+KW_SELF              : 18 26 27
+KW_STATIC            : 
+KW_STRUCT            : 47 48
+KW_TRUE              : 141
+KW_TYPE              : 68
+KW_UNSAFE            : 
+KW_USE               : 61
+KW_WHILE             : 
+LBRACE               : 49 54 63 70 72
+LBRACKET             : 12
+LIFETIME_ANON        : 
+LIFETIME_IDENT       : 37 46 46 149
+LIT_BYTE             : 
+LIT_BYTE_STR         : 
+LIT_CHAR             : 140
+LIT_FLOAT            : 137
+LIT_INT              : 134
+LIT_INT_BIN          : 136
+LIT_INT_HEX          : 135
+LIT_STR              : 138
+LIT_STR_RAW          : 139
+LPAREN               : 14 18 19 21 127 133 146
+OP_ADD_ASSIGN        : 91
+OP_AMP               : 27 144
+OP_AND_AND           : 102
+OP_ARROW             : 31
+OP_ASSIGN            : 68 69 90
+OP_AT                : 
+OP_BANG              : 121
+OP_CARET             : 
+OP_DIV_ASSIGN        : 94
+OP_DOTDOT            : 97
+OP_DOTDOTEQ          : 98
+OP_EQ_EQ             : 105
+OP_FAT_ARROW         : 
+OP_GE                : 110
+OP_GT                : 34 108
+OP_HASH              : 12
+OP_LE                : 109
+OP_LT                : 34 107
+OP_MINUS             : 113 120
+OP_MUL_ASSIGN        : 93
+OP_NE                : 106
+OP_OR_OR             : 100
+OP_PATH              : 67
+OP_PERCENT           : 117
+OP_PIPE              : 
+OP_PLUS              : 112
+OP_QUESTION          : 128
+OP_REM_ASSIGN        : 95
+OP_SHL               : 
+OP_SHR               : 
+OP_SLASH             : 116
+OP_STAR              : 115 122 145
+OP_SUB_ASSIGN        : 92
+OP_TILDE             : 
+RBRACE               : 49 54 63 70 72
+RBRACKET             : 12
+RPAREN               : 14 18 19 21 127 133 146
+SEMI                 : 48 61 68 69 71 82 83 84 85 86
+UNDERSCORE           : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+KW_MUT_opt           : 27 82
+add_expr             : 103 104 112 113
+and_expr             : 99 100 102
+assign_expr          : 87 89
+assign_op            : 89
+attr                 : 11 60
+attr_args            : 14 15
+attr_body            : 12
+block                : 21 132
+break_stmt           : 79
+cast_expr            : 114 115 116 117 119
+cmp_expr             : 101 102 104
+cmp_op               : 104
+const_def            : 9
+continue_stmt        : 80
+empty                : 3 16 20 23 30 33 41 52 57 75 148 150 152 0
+expr                 : 69 83 133 147
+expr_opt             : 84 85
+expr_stmt            : 77
+fn_def               : 4 58
+generic_param        : 35 36
+generic_param_list   : 34 36
+generic_params       : 32
+generic_params_opt   : 21 47 48 54
+impl_block           : 6
+impl_item            : 55 56 60
+impl_items           : 54 56
+item                 : 2 11 81
+let_stmt             : 76
+lifetime_opt         : 27
+literal              : 129
+mod_block            : 10
+mul_expr             : 111 112 113 115 116 117
+or_expr              : 96 97 97 98 98 100
+param                : 24 25
+param_list           : 22 25
+param_list_opt       : 21
+path                 : 62 67 131
+pattern              : 28 82
+postfix_expr         : 123 125
+postfix_op           : 125
+primary_expr         : 124
+program              : 2 70
+range_expr           : 88 89
+return_stmt          : 78
+return_type          : 29
+return_type_opt      : 21
+stmt                 : 73 74
+stmt_list            : 72 74
+struct_body          : 47
+struct_def           : 5
+struct_field         : 50 51
+struct_fields_opt    : 49 51
+type                 : 28 31 39 45 45 53 54 68 69 119 144 145 146
+type_alias           : 8 59
+unary_expr           : 118 120 121 122
+use_decl             : 7
+use_tree             : 61 64 65
+use_tree_list        : 63 65
+visibility           : 21 47 48 53 61 68 69 70 71
+where_clause         : 40
+where_clause_opt     : 21
+where_pred           : 43 44
+where_pred_list      : 42 44
+
