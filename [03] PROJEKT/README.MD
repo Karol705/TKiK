@@ -51,6 +51,40 @@ Projekt może zostać rozbudowany o bardziej zaawansowane funkcjonalności, taki
 
 ---
 
+## Struktura projektu
+
+```bash
+rust_state_tracker/
+├── src/
+│   ├── parser/             # PLY Lexer and Parser definitions
+│   │   ├── __init__.py
+│   │   ├── lexer.py        # Token definitions for Rust subset
+│   │   └── grammar.py      # Yacc production rules & AST building
+│   ├── analyzer/           # The "Brain" (Static Analysis)
+│   │   ├── __init__.py
+│   │   ├── models.py       # Classes for Variable, Reference, Scope
+│   │   ├── tracker.py      # Logic for Ownership/Borrowing rules
+│   │   └── timeline.py     # Generates the sequence of states
+│   ├── visualization/      # Output logic
+│   │   ├── __init__.py
+│   │   ├── text_render.py  # CLI/Terminal output
+│   │   └── graph_gen.py    # Export to Graphviz or Interactive plots
+│   ├── main.py             # Entry point (CLI handling)
+│   └── utils.py            # Helpers (logging, file I/O)
+├── tests/                  # Test suite
+│   ├── test_lexer.py
+│   ├── test_ownership.py   # Test cases for move/borrow logic
+│   └── samples/            # Real .rs files to feed into your tool
+│       ├── basic_move.rs
+│       └── borrow_conflict.rs
+├── .gitignore
+├── pyproject.toml          # Managed by UV
+├── uv.lock                 # Managed by UV
+└── README.md
+```
+
+---
+
 ## 🔤 Tokeny
 
 Poniżej zdefiniowany jest pełny zestaw tokenów dla analizowanego podzbioru języka Rust. Tokeny pogrupowane są według kategorii. Lekser powinien je rozpoznawać w podanej kolejności priorytetów (tokeny wieloznakowe przed jednoznakowymi, słowa kluczowe przed identyfikatorami).
