@@ -19,10 +19,16 @@ Prosty skaner leksykalny napisany w C, który przetwarza plik wejściowy i zamie
 
 ## 🧱 Tokeny
 
-- `NUMBER`
-- `PLUS`, `MINUS`, `MULTIPLY`, `DIVIDE`
-- `LPAREN`, `RPAREN`
-- `EOF`
+| Token      | Opis                 | Przykład |
+| ---------- | -------------------- | -------- |
+| `NUMBER`   | Liczba całkowita     | `123`    |
+| `PLUS`     | Operator dodawania   | `+`      |
+| `MINUS`    | Operator odejmowania | `-`      |
+| `MULTIPLY` | Operator mnożenia    | `*`      |
+| `DIVIDE`   | Operator dzielenia   | `/`      |
+| `LPAREN`   | Nawias lewy          | `(`      |
+| `RPAREN`   | Nawias prawy         | `)`      |
+| `EOF`      | Koniec pliku         | –        |
 
 ---
 
