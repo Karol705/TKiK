@@ -11,6 +11,7 @@ class Parser:
         # This is the method called by your __init__.py
         return self.parser.parse(text, lexer=lexer)
     
+# PROGRAM
     def p_program(self,p):
         """program : item_list"""
         p[0] = ('program', p[1])
@@ -24,9 +25,12 @@ class Parser:
             p[0] = []
 
     def p_item(self,p):
-        """item : fn_def"""
+        """item : fn_def
+                | const_def
+                | static_def"""
         p[0] = p[1]
-
+        
+# FUNKCJA
     def p_fn_def(self,p):
         """fn_def : FN IDENT LPAREN param_list RPAREN ARROW type block
                 | FN IDENT LPAREN param_list RPAREN block"""
@@ -50,7 +54,8 @@ class Parser:
     def p_param(self,p):
         """param : IDENT COLON type"""
         p[0] = ('param', p[1], p[3])
-        
+
+# TYPY
     def p_type_ident(self,p):
         """type : IDENT"""
         p[0] = ('type_name', p[1])
@@ -71,6 +76,7 @@ class Parser:
         """type : AMP LIFETIME MUT type"""
         p[0] = ('ref_lifetime', p[2], True, p[4])
         
+# BLOK I INSTRUKCJE
     def p_block(self,p):
         """block : LBRACE stmt_list RBRACE
                 | LBRACE stmt_list expr RBRACE"""
@@ -94,9 +100,11 @@ class Parser:
                 | if_stmt
                 | while_stmt
                 | loop_stmt
-                | break_stmt"""
+                | break_stmt
+                | item"""
         p[0] = p[1]
-        
+
+# DEKLARACJA ZMIENNEJ        
     def p_let_stmt_full(self,p):
         """let_stmt : LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON"""
         p[0] = ('let', p[2], p[3], p[4], p[5])
@@ -125,10 +133,22 @@ class Parser:
         """opt_init : empty"""
         p[0] = None
         
+# CONST
+    def p_const_def(self,p):
+        """const_def : CONST IDENT COLON type ASSIGN expr SEMICOLON"""
+        p[0] = ('const_def', p[2], p[4], p[6])
+
+# STATIC
+    def p_static_def(self,p):
+        """static_def : STATIC opt_mut IDENT COLON type ASSIGN expr SEMICOLON"""
+        p[0] = ('static_def', p[2], p[3], p[5], p[7])
+
+# INSTRUKCJA WYRAŻENIA
     def p_expr_stmt(self,p):
         """expr_stmt : expr SEMICOLON"""
         p[0] = ('expr_stmt', p[1])
 
+# INSTRUKCJA RETURN
     def p_return_stmt(self,p):
         """return_stmt : RETURN expr SEMICOLON
                     | RETURN SEMICOLON"""
@@ -136,7 +156,8 @@ class Parser:
             p[0] = ('return', p[2])
         else:
             p[0] = ('return', None)
-            
+
+# INSTRUKCJA WARUNKOWA if/else
     def p_if_stmt(self,p):
         """if_stmt : IF expr block
                 | IF expr block ELSE block
@@ -145,11 +166,13 @@ class Parser:
             p[0] = ('if', p[2], p[3], None)
         else:
             p[0] = ('if', p[2], p[3], p[5])
-            
+
+# PĘTLA WHILE       
     def p_while_stmt(self,p):
         """while_stmt : WHILE expr block"""
         p[0] = ('while', p[2], p[3])
 
+# PĘTLA LOOP I BREAK
     def p_loop_stmt(self,p):
         """loop_stmt : LOOP block"""
         p[0] = ('loop', p[2])

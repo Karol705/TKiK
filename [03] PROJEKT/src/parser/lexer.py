@@ -14,6 +14,8 @@ class Lexer:
         'break':  'BREAK',
         'true':   'TRUE',
         'false':  'FALSE',
+        'const':  'CONST',
+        'static': 'STATIC',
     }
     
     tokens = (

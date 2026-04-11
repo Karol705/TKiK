@@ -566,3 +566,102 @@ class TestIntegration:
         assert fn[2][0][2] == ("ref", False, ("type_name", "i32"))
         tail_expr = fn[4][2]
         assert tail_expr == ("binop", "+", ("ident", "a"), ("ident", "b"))
+        
+# ===========================================================================
+# 9. TESTY PARSERA — CONST / STATIC (ITEMS)
+# ===========================================================================
+
+
+class TestConstStatic:
+    def _items(self, code: str):
+        return items(parse(code))
+
+    # -----------------------
+    # CONST
+    # -----------------------
+
+    def test_const_simple(self):
+        ast_items = self._items("const X: i32 = 5;")
+        node = ast_items[0]
+
+        assert node == ("const_def", "X", ("type_name", "i32"), ("literal", 5))
+
+    def test_const_expression(self):
+        ast_items = self._items("const Y: i32 = 2 + 3;")
+        node = ast_items[0]
+
+        assert node == (
+            "const_def",
+            "Y",
+            ("type_name", "i32"),
+            ("binop", "+", ("literal", 2), ("literal", 3)),
+        )
+
+    def test_const_multiple(self):
+        ast_items = self._items("""
+            const A: i32 = 1;
+            const B: i32 = 2;
+        """)
+
+        assert len(ast_items) == 2
+        assert ast_items[0][1] == "A"
+        assert ast_items[1][1] == "B"
+
+    # -----------------------
+    # STATIC
+    # -----------------------
+
+    def test_static_simple(self):
+        ast_items = self._items("static X: i32 = 10;")
+        node = ast_items[0]
+
+        assert node == ("static_def", False, "X", ("type_name", "i32"), ("literal", 10))
+
+    def test_static_mut(self):
+        ast_items = self._items("static mut X: i32 = 10;")
+        node = ast_items[0]
+
+        assert node == ("static_def", True, "X", ("type_name", "i32"), ("literal", 10))
+
+    def test_static_expression(self):
+        ast_items = self._items("static X: i32 = 1 + 2 * 3;")
+        node = ast_items[0]
+
+        assert node[0] == "static_def"
+        assert node[1] is False
+        assert node[2] == "X"
+
+        # sprawdzamy strukturę AST zamiast całego tuple (czytelniejsze)
+        expr = node[4]
+        assert expr == (
+            "binop",
+            "+",
+            ("literal", 1),
+            ("binop", "*", ("literal", 2), ("literal", 3)),
+        )
+
+    # -----------------------
+    # MIX
+    # -----------------------
+
+    def test_const_and_static_mixed(self):
+        ast_items = self._items("""
+            const A: i32 = 1;
+            static mut B: i32 = 2;
+        """)
+
+        assert ast_items[0][0] == "const_def"
+        assert ast_items[1][0] == "static_def"
+
+    def test_const_static_with_function(self):
+        ast_items = self._items("""
+            const A: i32 = 1;
+            static B: i32 = 2;
+
+            fn main() { }
+        """)
+
+        assert len(ast_items) == 3
+        assert ast_items[0][0] == "const_def"
+        assert ast_items[1][0] == "static_def"
+        assert ast_items[2][0] == "fn_def"

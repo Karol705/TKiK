@@ -21,6 +21,8 @@ Słowa kluczowe są rozpoznawane w regule dla `IDENT` — jeśli dopasowany iden
 | `BREAK`  | `break`          |
 | `TRUE`   | `true`           |
 | `FALSE`  | `false`          |
+| `CONST`  | `const`          |
+| `STATIC` | `static`         |
 
 ```python
 reserved = {
@@ -35,6 +37,8 @@ reserved = {
     'break':  'BREAK',
     'true':   'TRUE',
     'false':  'FALSE',
+    'const':  'CONST',
+    'static': 'STATIC',
 }
 ```
 
@@ -190,6 +194,8 @@ tokens = [
 program     → item*
 
 item        → fn_def
+            | const_def
+            | static_def
 ```
 
 Program składa się z listy definicji funkcji. Na tym poziomie nie obsługujemy
@@ -209,7 +215,9 @@ def p_item_list(p):
         p[0] = []
 
 def p_item(p):
-    """item : fn_def"""
+    """item : fn_def
+            | const_def
+            | static_def"""
     p[0] = p[1]
 ```
 
@@ -311,6 +319,7 @@ stmt        → let_stmt
             | while_stmt
             | loop_stmt
             | break_stmt
+            | item
 ```
 
 ```python
@@ -337,7 +346,8 @@ def p_stmt(p):
             | if_stmt
             | while_stmt
             | loop_stmt
-            | break_stmt"""
+            | break_stmt
+            | item"""
     p[0] = p[1]
 ```
 
@@ -350,6 +360,8 @@ let_stmt    → 'let' IDENT ':' type '=' expr ';'
             | 'let' 'mut' IDENT '=' expr ';'
             | 'let' IDENT ';'               # deklaracja bez inicjalizacji
             | 'let' 'mut' IDENT ';'
+
+let_stmt    → 'let' opt_mut IDENT opt_type_annotation opt_init ';'
 ```
 
 > **Implementacyja:** Zamiast jednej dużej reguły, wygodniej zdefiniować pomocnicze reguły `opt_type` i `opt_init` — zmniejsza to liczbę kombinacji.
@@ -383,6 +395,26 @@ def p_opt_init_none(p):
     """opt_init : empty"""
     p[0] = None
 ```
+
+##### 2.5.1.1 Definicja `const`
+
+```python
+def p_const_def(p):
+    """const_def : CONST IDENT COLON type ASSIGN expr SEMICOLON"""
+    p[0] = ('const_def', p[2], p[4], p[6])
+```
+
+---
+
+##### 2.5.1.2 Definicja `static`
+
+```python
+def p_static_def(p):
+    """static_def : STATIC opt_mut IDENT COLON type ASSIGN expr SEMICOLON"""
+    p[0] = ('static_def', p[2], p[3], p[5], p[7])
+```
+
+---
 
 #### 2.5.2 Instrukcja wyrażenia
 
