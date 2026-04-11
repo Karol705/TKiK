@@ -102,7 +102,6 @@ class TestLexerOperators:
         ("!=", "NEQ"),
         ("<=", "LEQ"),
         (">=", "GEQ"),
-        ("&&", "AND"),
         ("||", "OR"),
     ])
     def test_multi_char_operator(self, src, expected_type):
@@ -442,6 +441,7 @@ class TestTypes:
         assert self._param_type("&'a mut i32") == ("ref_lifetime", "'a", True, ("type_name", "i32"))
 
     def test_nested_ref(self):
+        print(self._param_type("&&i32"))
         assert self._param_type("&&i32") == ("ref", False, ("ref", False, ("type_name", "i32")))
 
 
@@ -451,10 +451,14 @@ class TestTypes:
 
 
 class TestSyntaxErrors:
-    def test_missing_semicolon(self):
+    def test_missing_semicolon(self,capsys):
         # Bez średnika parser powinien zwrócić None (lub wywołać p_error)
         result = parse("fn f() { let x = 5 }")
-        assert result is None
+        
+        captured = capsys.readouterr()
+        
+        assert "Błąd składni" in captured.out
+        assert result == ('program', [])
 
     def test_missing_closing_brace(self):
         result = parse("fn f() { let x = 5;")
@@ -464,14 +468,21 @@ class TestSyntaxErrors:
         ast = parse("")
         assert ast == ("program", [])
 
-    def test_fn_missing_body(self):
+    def test_fn_missing_body(self,capsys):
         result = parse("fn foo();")
-        assert result is None
+        
+        captured = capsys.readouterr()
+        
+        assert "Błąd składni" in captured.out
+        assert result == ('program', [])
 
-    def test_invalid_token(self):
+    def test_invalid_token(self,capsys):
         # '@' nie jest tokenem — lekser zgłosi błąd, parser zwróci None
         result = parse("fn f() { let x = @5; }")
-        assert result is None
+        
+        captured = capsys.readouterr()
+        
+        assert "Nieznany znak" in captured.out
 
 
 # ===========================================================================

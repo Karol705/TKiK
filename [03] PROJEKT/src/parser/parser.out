@@ -51,7 +51,7 @@ Rule 41    loop_stmt -> LOOP block
 Rule 42    break_stmt -> BREAK SEMICOLON
 Rule 43    expr -> IDENT ASSIGN expr
 Rule 44    expr -> expr OR expr
-Rule 45    expr -> expr AND expr
+Rule 45    expr -> expr AMP AMP expr
 Rule 46    expr -> expr EQ expr
 Rule 47    expr -> expr NEQ expr
 Rule 48    expr -> expr LT expr
@@ -83,8 +83,7 @@ Rule 73    empty -> <empty>
 
 Terminals, with rules where they appear
 
-AMP                  : 12 13 14 15 59 60
-AND                  : 45
+AMP                  : 12 13 14 15 45 45 59 60
 ARROW                : 5
 ASSIGN               : 32 43
 BREAK                : 42
@@ -471,7 +470,7 @@ state 27
     (18) stmt_list -> stmt_list . stmt
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -516,9 +515,9 @@ state 27
 
     RBRACE          shift and go to state 33
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -639,7 +638,7 @@ state 34
 
     (17) block -> LBRACE stmt_list expr . RBRACE
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -656,7 +655,7 @@ state 34
 
     RBRACE          shift and go to state 60
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -704,7 +703,7 @@ state 36
     ASSIGN          shift and go to state 76
     RBRACE          reduce using rule 66 (expr -> IDENT .)
     OR              reduce using rule 66 (expr -> IDENT .)
-    AND             reduce using rule 66 (expr -> IDENT .)
+    AMP             reduce using rule 66 (expr -> IDENT .)
     EQ              reduce using rule 66 (expr -> IDENT .)
     NEQ             reduce using rule 66 (expr -> IDENT .)
     LT              reduce using rule 66 (expr -> IDENT .)
@@ -726,10 +725,11 @@ state 36
 
 state 37
 
-    (57) expr -> MINUS . expr
+    (59) expr -> AMP . expr
+    (60) expr -> AMP . MUT expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -755,10 +755,11 @@ state 37
     (68) expr -> . IDENT LPAREN arg_list RPAREN
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
+    MUT             shift and go to state 79
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -770,10 +771,10 @@ state 37
 
 state 38
 
-    (58) expr -> NOT . expr
+    (57) expr -> MINUS . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -800,55 +801,9 @@ state 38
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
-    INTEGER         shift and go to state 40
-    FLOAT           shift and go to state 41
-    STRING          shift and go to state 42
-    TRUE            shift and go to state 43
-    FALSE           shift and go to state 44
-    LPAREN          shift and go to state 45
-
-    expr                           shift and go to state 79
-
-state 39
-
-    (59) expr -> AMP . expr
-    (60) expr -> AMP . MUT expr
-    (43) expr -> . IDENT ASSIGN expr
-    (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
-    (46) expr -> . expr EQ expr
-    (47) expr -> . expr NEQ expr
-    (48) expr -> . expr LT expr
-    (49) expr -> . expr GT expr
-    (50) expr -> . expr LEQ expr
-    (51) expr -> . expr GEQ expr
-    (52) expr -> . expr PLUS expr
-    (53) expr -> . expr MINUS expr
-    (54) expr -> . expr STAR expr
-    (55) expr -> . expr SLASH expr
-    (56) expr -> . expr PERCENT expr
-    (57) expr -> . MINUS expr
-    (58) expr -> . NOT expr
-    (59) expr -> . AMP expr
-    (60) expr -> . AMP MUT expr
-    (61) expr -> . INTEGER
-    (62) expr -> . FLOAT
-    (63) expr -> . STRING
-    (64) expr -> . TRUE
-    (65) expr -> . FALSE
-    (66) expr -> . IDENT
-    (67) expr -> . LPAREN expr RPAREN
-    (68) expr -> . IDENT LPAREN arg_list RPAREN
-    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
-
-    MUT             shift and go to state 81
-    IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -858,13 +813,57 @@ state 39
 
     expr                           shift and go to state 80
 
+state 39
+
+    (58) expr -> NOT . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AMP AMP expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 81
+
 state 40
 
     (61) expr -> INTEGER .
 
     RBRACE          reduce using rule 61 (expr -> INTEGER .)
     OR              reduce using rule 61 (expr -> INTEGER .)
-    AND             reduce using rule 61 (expr -> INTEGER .)
+    AMP             reduce using rule 61 (expr -> INTEGER .)
     EQ              reduce using rule 61 (expr -> INTEGER .)
     NEQ             reduce using rule 61 (expr -> INTEGER .)
     LT              reduce using rule 61 (expr -> INTEGER .)
@@ -889,7 +888,7 @@ state 41
 
     RBRACE          reduce using rule 62 (expr -> FLOAT .)
     OR              reduce using rule 62 (expr -> FLOAT .)
-    AND             reduce using rule 62 (expr -> FLOAT .)
+    AMP             reduce using rule 62 (expr -> FLOAT .)
     EQ              reduce using rule 62 (expr -> FLOAT .)
     NEQ             reduce using rule 62 (expr -> FLOAT .)
     LT              reduce using rule 62 (expr -> FLOAT .)
@@ -914,7 +913,7 @@ state 42
 
     RBRACE          reduce using rule 63 (expr -> STRING .)
     OR              reduce using rule 63 (expr -> STRING .)
-    AND             reduce using rule 63 (expr -> STRING .)
+    AMP             reduce using rule 63 (expr -> STRING .)
     EQ              reduce using rule 63 (expr -> STRING .)
     NEQ             reduce using rule 63 (expr -> STRING .)
     LT              reduce using rule 63 (expr -> STRING .)
@@ -939,7 +938,7 @@ state 43
 
     RBRACE          reduce using rule 64 (expr -> TRUE .)
     OR              reduce using rule 64 (expr -> TRUE .)
-    AND             reduce using rule 64 (expr -> TRUE .)
+    AMP             reduce using rule 64 (expr -> TRUE .)
     EQ              reduce using rule 64 (expr -> TRUE .)
     NEQ             reduce using rule 64 (expr -> TRUE .)
     LT              reduce using rule 64 (expr -> TRUE .)
@@ -964,7 +963,7 @@ state 44
 
     RBRACE          reduce using rule 65 (expr -> FALSE .)
     OR              reduce using rule 65 (expr -> FALSE .)
-    AND             reduce using rule 65 (expr -> FALSE .)
+    AMP             reduce using rule 65 (expr -> FALSE .)
     EQ              reduce using rule 65 (expr -> FALSE .)
     NEQ             reduce using rule 65 (expr -> FALSE .)
     LT              reduce using rule 65 (expr -> FALSE .)
@@ -988,7 +987,7 @@ state 45
     (67) expr -> LPAREN . expr RPAREN
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1015,9 +1014,9 @@ state 45
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1207,7 +1206,7 @@ state 54
     (36) return_stmt -> RETURN . SEMICOLON
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1235,9 +1234,9 @@ state 54
 
     SEMICOLON       shift and go to state 87
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1254,7 +1253,7 @@ state 55
     (39) if_stmt -> IF . expr block ELSE if_stmt
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1281,9 +1280,9 @@ state 55
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1298,7 +1297,7 @@ state 56
     (40) while_stmt -> WHILE . expr block
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1325,9 +1324,9 @@ state 56
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1396,7 +1395,7 @@ state 61
     (44) expr -> expr OR . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1423,9 +1422,9 @@ state 61
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1437,54 +1436,17 @@ state 61
 
 state 62
 
-    (45) expr -> expr AND . expr
-    (43) expr -> . IDENT ASSIGN expr
-    (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
-    (46) expr -> . expr EQ expr
-    (47) expr -> . expr NEQ expr
-    (48) expr -> . expr LT expr
-    (49) expr -> . expr GT expr
-    (50) expr -> . expr LEQ expr
-    (51) expr -> . expr GEQ expr
-    (52) expr -> . expr PLUS expr
-    (53) expr -> . expr MINUS expr
-    (54) expr -> . expr STAR expr
-    (55) expr -> . expr SLASH expr
-    (56) expr -> . expr PERCENT expr
-    (57) expr -> . MINUS expr
-    (58) expr -> . NOT expr
-    (59) expr -> . AMP expr
-    (60) expr -> . AMP MUT expr
-    (61) expr -> . INTEGER
-    (62) expr -> . FLOAT
-    (63) expr -> . STRING
-    (64) expr -> . TRUE
-    (65) expr -> . FALSE
-    (66) expr -> . IDENT
-    (67) expr -> . LPAREN expr RPAREN
-    (68) expr -> . IDENT LPAREN arg_list RPAREN
-    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+    (45) expr -> expr AMP . AMP expr
 
-    IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
-    INTEGER         shift and go to state 40
-    FLOAT           shift and go to state 41
-    STRING          shift and go to state 42
-    TRUE            shift and go to state 43
-    FALSE           shift and go to state 44
-    LPAREN          shift and go to state 45
+    AMP             shift and go to state 93
 
-    expr                           shift and go to state 93
 
 state 63
 
     (46) expr -> expr EQ . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1511,9 +1473,9 @@ state 63
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1528,7 +1490,7 @@ state 64
     (47) expr -> expr NEQ . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1555,9 +1517,9 @@ state 64
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1572,7 +1534,7 @@ state 65
     (48) expr -> expr LT . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1599,9 +1561,9 @@ state 65
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1616,7 +1578,7 @@ state 66
     (49) expr -> expr GT . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1643,9 +1605,9 @@ state 66
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1660,7 +1622,7 @@ state 67
     (50) expr -> expr LEQ . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1687,9 +1649,9 @@ state 67
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1704,7 +1666,7 @@ state 68
     (51) expr -> expr GEQ . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1731,9 +1693,9 @@ state 68
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1748,7 +1710,7 @@ state 69
     (52) expr -> expr PLUS . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1775,9 +1737,9 @@ state 69
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1792,7 +1754,7 @@ state 70
     (53) expr -> expr MINUS . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1819,9 +1781,9 @@ state 70
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1836,7 +1798,7 @@ state 71
     (54) expr -> expr STAR . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1863,9 +1825,9 @@ state 71
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1880,7 +1842,7 @@ state 72
     (55) expr -> expr SLASH . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1907,9 +1869,9 @@ state 72
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1924,7 +1886,7 @@ state 73
     (56) expr -> expr PERCENT . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -1951,9 +1913,9 @@ state 73
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -1998,7 +1960,7 @@ state 76
     (43) expr -> IDENT ASSIGN . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -2025,9 +1987,9 @@ state 76
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -2046,7 +2008,7 @@ state 77
     (73) empty -> .
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -2075,9 +2037,9 @@ state 77
     RPAREN          reduce using rule 73 (empty -> .)
     COMMA           reduce using rule 73 (empty -> .)
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -2091,117 +2053,9 @@ state 77
 
 state 78
 
-    (57) expr -> MINUS expr .
-    (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
-    (46) expr -> expr . EQ expr
-    (47) expr -> expr . NEQ expr
-    (48) expr -> expr . LT expr
-    (49) expr -> expr . GT expr
-    (50) expr -> expr . LEQ expr
-    (51) expr -> expr . GEQ expr
-    (52) expr -> expr . PLUS expr
-    (53) expr -> expr . MINUS expr
-    (54) expr -> expr . STAR expr
-    (55) expr -> expr . SLASH expr
-    (56) expr -> expr . PERCENT expr
-    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
-
-    RBRACE          reduce using rule 57 (expr -> MINUS expr .)
-    OR              reduce using rule 57 (expr -> MINUS expr .)
-    AND             reduce using rule 57 (expr -> MINUS expr .)
-    EQ              reduce using rule 57 (expr -> MINUS expr .)
-    NEQ             reduce using rule 57 (expr -> MINUS expr .)
-    LT              reduce using rule 57 (expr -> MINUS expr .)
-    GT              reduce using rule 57 (expr -> MINUS expr .)
-    LEQ             reduce using rule 57 (expr -> MINUS expr .)
-    GEQ             reduce using rule 57 (expr -> MINUS expr .)
-    PLUS            reduce using rule 57 (expr -> MINUS expr .)
-    MINUS           reduce using rule 57 (expr -> MINUS expr .)
-    STAR            reduce using rule 57 (expr -> MINUS expr .)
-    SLASH           reduce using rule 57 (expr -> MINUS expr .)
-    PERCENT         reduce using rule 57 (expr -> MINUS expr .)
-    SEMICOLON       reduce using rule 57 (expr -> MINUS expr .)
-    RPAREN          reduce using rule 57 (expr -> MINUS expr .)
-    LBRACE          reduce using rule 57 (expr -> MINUS expr .)
-    COMMA           reduce using rule 57 (expr -> MINUS expr .)
-    DOT             shift and go to state 74
-
-  ! DOT             [ reduce using rule 57 (expr -> MINUS expr .) ]
-  ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
-  ! EQ              [ shift and go to state 63 ]
-  ! NEQ             [ shift and go to state 64 ]
-  ! LT              [ shift and go to state 65 ]
-  ! GT              [ shift and go to state 66 ]
-  ! LEQ             [ shift and go to state 67 ]
-  ! GEQ             [ shift and go to state 68 ]
-  ! PLUS            [ shift and go to state 69 ]
-  ! MINUS           [ shift and go to state 70 ]
-  ! STAR            [ shift and go to state 71 ]
-  ! SLASH           [ shift and go to state 72 ]
-  ! PERCENT         [ shift and go to state 73 ]
-
-
-state 79
-
-    (58) expr -> NOT expr .
-    (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
-    (46) expr -> expr . EQ expr
-    (47) expr -> expr . NEQ expr
-    (48) expr -> expr . LT expr
-    (49) expr -> expr . GT expr
-    (50) expr -> expr . LEQ expr
-    (51) expr -> expr . GEQ expr
-    (52) expr -> expr . PLUS expr
-    (53) expr -> expr . MINUS expr
-    (54) expr -> expr . STAR expr
-    (55) expr -> expr . SLASH expr
-    (56) expr -> expr . PERCENT expr
-    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
-
-    RBRACE          reduce using rule 58 (expr -> NOT expr .)
-    OR              reduce using rule 58 (expr -> NOT expr .)
-    AND             reduce using rule 58 (expr -> NOT expr .)
-    EQ              reduce using rule 58 (expr -> NOT expr .)
-    NEQ             reduce using rule 58 (expr -> NOT expr .)
-    LT              reduce using rule 58 (expr -> NOT expr .)
-    GT              reduce using rule 58 (expr -> NOT expr .)
-    LEQ             reduce using rule 58 (expr -> NOT expr .)
-    GEQ             reduce using rule 58 (expr -> NOT expr .)
-    PLUS            reduce using rule 58 (expr -> NOT expr .)
-    MINUS           reduce using rule 58 (expr -> NOT expr .)
-    STAR            reduce using rule 58 (expr -> NOT expr .)
-    SLASH           reduce using rule 58 (expr -> NOT expr .)
-    PERCENT         reduce using rule 58 (expr -> NOT expr .)
-    SEMICOLON       reduce using rule 58 (expr -> NOT expr .)
-    RPAREN          reduce using rule 58 (expr -> NOT expr .)
-    LBRACE          reduce using rule 58 (expr -> NOT expr .)
-    COMMA           reduce using rule 58 (expr -> NOT expr .)
-    DOT             shift and go to state 74
-
-  ! DOT             [ reduce using rule 58 (expr -> NOT expr .) ]
-  ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
-  ! EQ              [ shift and go to state 63 ]
-  ! NEQ             [ shift and go to state 64 ]
-  ! LT              [ shift and go to state 65 ]
-  ! GT              [ shift and go to state 66 ]
-  ! LEQ             [ shift and go to state 67 ]
-  ! GEQ             [ shift and go to state 68 ]
-  ! PLUS            [ shift and go to state 69 ]
-  ! MINUS           [ shift and go to state 70 ]
-  ! STAR            [ shift and go to state 71 ]
-  ! SLASH           [ shift and go to state 72 ]
-  ! PERCENT         [ shift and go to state 73 ]
-
-
-state 80
-
     (59) expr -> AMP expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2217,7 +2071,7 @@ state 80
 
     RBRACE          reduce using rule 59 (expr -> AMP expr .)
     OR              reduce using rule 59 (expr -> AMP expr .)
-    AND             reduce using rule 59 (expr -> AMP expr .)
+    AMP             reduce using rule 59 (expr -> AMP expr .)
     EQ              reduce using rule 59 (expr -> AMP expr .)
     NEQ             reduce using rule 59 (expr -> AMP expr .)
     LT              reduce using rule 59 (expr -> AMP expr .)
@@ -2237,7 +2091,7 @@ state 80
 
   ! DOT             [ reduce using rule 59 (expr -> AMP expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -2251,12 +2105,12 @@ state 80
   ! PERCENT         [ shift and go to state 73 ]
 
 
-state 81
+state 79
 
     (60) expr -> AMP MUT . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -2283,9 +2137,9 @@ state 81
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -2295,11 +2149,119 @@ state 81
 
     expr                           shift and go to state 110
 
+state 80
+
+    (57) expr -> MINUS expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AMP AMP expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 57 (expr -> MINUS expr .)
+    OR              reduce using rule 57 (expr -> MINUS expr .)
+    AMP             reduce using rule 57 (expr -> MINUS expr .)
+    EQ              reduce using rule 57 (expr -> MINUS expr .)
+    NEQ             reduce using rule 57 (expr -> MINUS expr .)
+    LT              reduce using rule 57 (expr -> MINUS expr .)
+    GT              reduce using rule 57 (expr -> MINUS expr .)
+    LEQ             reduce using rule 57 (expr -> MINUS expr .)
+    GEQ             reduce using rule 57 (expr -> MINUS expr .)
+    PLUS            reduce using rule 57 (expr -> MINUS expr .)
+    MINUS           reduce using rule 57 (expr -> MINUS expr .)
+    STAR            reduce using rule 57 (expr -> MINUS expr .)
+    SLASH           reduce using rule 57 (expr -> MINUS expr .)
+    PERCENT         reduce using rule 57 (expr -> MINUS expr .)
+    SEMICOLON       reduce using rule 57 (expr -> MINUS expr .)
+    RPAREN          reduce using rule 57 (expr -> MINUS expr .)
+    LBRACE          reduce using rule 57 (expr -> MINUS expr .)
+    COMMA           reduce using rule 57 (expr -> MINUS expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 57 (expr -> MINUS expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AMP             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 81
+
+    (58) expr -> NOT expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AMP AMP expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 58 (expr -> NOT expr .)
+    OR              reduce using rule 58 (expr -> NOT expr .)
+    AMP             reduce using rule 58 (expr -> NOT expr .)
+    EQ              reduce using rule 58 (expr -> NOT expr .)
+    NEQ             reduce using rule 58 (expr -> NOT expr .)
+    LT              reduce using rule 58 (expr -> NOT expr .)
+    GT              reduce using rule 58 (expr -> NOT expr .)
+    LEQ             reduce using rule 58 (expr -> NOT expr .)
+    GEQ             reduce using rule 58 (expr -> NOT expr .)
+    PLUS            reduce using rule 58 (expr -> NOT expr .)
+    MINUS           reduce using rule 58 (expr -> NOT expr .)
+    STAR            reduce using rule 58 (expr -> NOT expr .)
+    SLASH           reduce using rule 58 (expr -> NOT expr .)
+    PERCENT         reduce using rule 58 (expr -> NOT expr .)
+    SEMICOLON       reduce using rule 58 (expr -> NOT expr .)
+    RPAREN          reduce using rule 58 (expr -> NOT expr .)
+    LBRACE          reduce using rule 58 (expr -> NOT expr .)
+    COMMA           reduce using rule 58 (expr -> NOT expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 58 (expr -> NOT expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AMP             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
 state 82
 
     (67) expr -> LPAREN expr . RPAREN
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2315,7 +2277,7 @@ state 82
 
     RPAREN          shift and go to state 111
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -2355,7 +2317,7 @@ state 86
 
     (35) return_stmt -> RETURN expr . SEMICOLON
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2371,7 +2333,7 @@ state 86
 
     SEMICOLON       shift and go to state 113
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -2415,7 +2377,7 @@ state 88
     (38) if_stmt -> IF expr . block ELSE block
     (39) if_stmt -> IF expr . block ELSE if_stmt
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2432,7 +2394,7 @@ state 88
     (17) block -> . LBRACE stmt_list expr RBRACE
 
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -2453,7 +2415,7 @@ state 89
 
     (40) while_stmt -> WHILE expr . block
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2470,7 +2432,7 @@ state 89
     (17) block -> . LBRACE stmt_list expr RBRACE
 
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -2537,7 +2499,7 @@ state 92
 
     (44) expr -> expr OR expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2553,11 +2515,11 @@ state 92
 
     RBRACE          reduce using rule 44 (expr -> expr OR expr .)
     OR              reduce using rule 44 (expr -> expr OR expr .)
+    AMP             reduce using rule 44 (expr -> expr OR expr .)
     SEMICOLON       reduce using rule 44 (expr -> expr OR expr .)
     RPAREN          reduce using rule 44 (expr -> expr OR expr .)
     LBRACE          reduce using rule 44 (expr -> expr OR expr .)
     COMMA           reduce using rule 44 (expr -> expr OR expr .)
-    AND             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -2571,7 +2533,6 @@ state 92
     PERCENT         shift and go to state 73
     DOT             shift and go to state 74
 
-  ! AND             [ reduce using rule 44 (expr -> expr OR expr .) ]
   ! EQ              [ reduce using rule 44 (expr -> expr OR expr .) ]
   ! NEQ             [ reduce using rule 44 (expr -> expr OR expr .) ]
   ! LT              [ reduce using rule 44 (expr -> expr OR expr .) ]
@@ -2585,67 +2546,58 @@ state 92
   ! PERCENT         [ reduce using rule 44 (expr -> expr OR expr .) ]
   ! DOT             [ reduce using rule 44 (expr -> expr OR expr .) ]
   ! OR              [ shift and go to state 61 ]
+  ! AMP             [ shift and go to state 62 ]
 
 
 state 93
 
-    (45) expr -> expr AND expr .
-    (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
-    (46) expr -> expr . EQ expr
-    (47) expr -> expr . NEQ expr
-    (48) expr -> expr . LT expr
-    (49) expr -> expr . GT expr
-    (50) expr -> expr . LEQ expr
-    (51) expr -> expr . GEQ expr
-    (52) expr -> expr . PLUS expr
-    (53) expr -> expr . MINUS expr
-    (54) expr -> expr . STAR expr
-    (55) expr -> expr . SLASH expr
-    (56) expr -> expr . PERCENT expr
-    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+    (45) expr -> expr AMP AMP . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AMP AMP expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
-    RBRACE          reduce using rule 45 (expr -> expr AND expr .)
-    OR              reduce using rule 45 (expr -> expr AND expr .)
-    AND             reduce using rule 45 (expr -> expr AND expr .)
-    SEMICOLON       reduce using rule 45 (expr -> expr AND expr .)
-    RPAREN          reduce using rule 45 (expr -> expr AND expr .)
-    LBRACE          reduce using rule 45 (expr -> expr AND expr .)
-    COMMA           reduce using rule 45 (expr -> expr AND expr .)
-    EQ              shift and go to state 63
-    NEQ             shift and go to state 64
-    LT              shift and go to state 65
-    GT              shift and go to state 66
-    LEQ             shift and go to state 67
-    GEQ             shift and go to state 68
-    PLUS            shift and go to state 69
-    MINUS           shift and go to state 70
-    STAR            shift and go to state 71
-    SLASH           shift and go to state 72
-    PERCENT         shift and go to state 73
-    DOT             shift and go to state 74
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
 
-  ! EQ              [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! NEQ             [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! LT              [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! GT              [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! LEQ             [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! GEQ             [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! PLUS            [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! MINUS           [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! STAR            [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! SLASH           [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! PERCENT         [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! DOT             [ reduce using rule 45 (expr -> expr AND expr .) ]
-  ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
-
+    expr                           shift and go to state 116
 
 state 94
 
     (46) expr -> expr EQ expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2661,7 +2613,7 @@ state 94
 
     RBRACE          reduce using rule 46 (expr -> expr EQ expr .)
     OR              reduce using rule 46 (expr -> expr EQ expr .)
-    AND             reduce using rule 46 (expr -> expr EQ expr .)
+    AMP             reduce using rule 46 (expr -> expr EQ expr .)
     EQ              reduce using rule 46 (expr -> expr EQ expr .)
     NEQ             reduce using rule 46 (expr -> expr EQ expr .)
     SEMICOLON       reduce using rule 46 (expr -> expr EQ expr .)
@@ -2690,7 +2642,7 @@ state 94
   ! PERCENT         [ reduce using rule 46 (expr -> expr EQ expr .) ]
   ! DOT             [ reduce using rule 46 (expr -> expr EQ expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
 
@@ -2699,7 +2651,7 @@ state 95
 
     (47) expr -> expr NEQ expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2715,7 +2667,7 @@ state 95
 
     RBRACE          reduce using rule 47 (expr -> expr NEQ expr .)
     OR              reduce using rule 47 (expr -> expr NEQ expr .)
-    AND             reduce using rule 47 (expr -> expr NEQ expr .)
+    AMP             reduce using rule 47 (expr -> expr NEQ expr .)
     EQ              reduce using rule 47 (expr -> expr NEQ expr .)
     NEQ             reduce using rule 47 (expr -> expr NEQ expr .)
     SEMICOLON       reduce using rule 47 (expr -> expr NEQ expr .)
@@ -2744,7 +2696,7 @@ state 95
   ! PERCENT         [ reduce using rule 47 (expr -> expr NEQ expr .) ]
   ! DOT             [ reduce using rule 47 (expr -> expr NEQ expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
 
@@ -2753,7 +2705,7 @@ state 96
 
     (48) expr -> expr LT expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2769,7 +2721,7 @@ state 96
 
     RBRACE          reduce using rule 48 (expr -> expr LT expr .)
     OR              reduce using rule 48 (expr -> expr LT expr .)
-    AND             reduce using rule 48 (expr -> expr LT expr .)
+    AMP             reduce using rule 48 (expr -> expr LT expr .)
     EQ              reduce using rule 48 (expr -> expr LT expr .)
     NEQ             reduce using rule 48 (expr -> expr LT expr .)
     LT              reduce using rule 48 (expr -> expr LT expr .)
@@ -2794,7 +2746,7 @@ state 96
   ! PERCENT         [ reduce using rule 48 (expr -> expr LT expr .) ]
   ! DOT             [ reduce using rule 48 (expr -> expr LT expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -2807,7 +2759,7 @@ state 97
 
     (49) expr -> expr GT expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2823,7 +2775,7 @@ state 97
 
     RBRACE          reduce using rule 49 (expr -> expr GT expr .)
     OR              reduce using rule 49 (expr -> expr GT expr .)
-    AND             reduce using rule 49 (expr -> expr GT expr .)
+    AMP             reduce using rule 49 (expr -> expr GT expr .)
     EQ              reduce using rule 49 (expr -> expr GT expr .)
     NEQ             reduce using rule 49 (expr -> expr GT expr .)
     LT              reduce using rule 49 (expr -> expr GT expr .)
@@ -2848,7 +2800,7 @@ state 97
   ! PERCENT         [ reduce using rule 49 (expr -> expr GT expr .) ]
   ! DOT             [ reduce using rule 49 (expr -> expr GT expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -2861,7 +2813,7 @@ state 98
 
     (50) expr -> expr LEQ expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2877,7 +2829,7 @@ state 98
 
     RBRACE          reduce using rule 50 (expr -> expr LEQ expr .)
     OR              reduce using rule 50 (expr -> expr LEQ expr .)
-    AND             reduce using rule 50 (expr -> expr LEQ expr .)
+    AMP             reduce using rule 50 (expr -> expr LEQ expr .)
     EQ              reduce using rule 50 (expr -> expr LEQ expr .)
     NEQ             reduce using rule 50 (expr -> expr LEQ expr .)
     LT              reduce using rule 50 (expr -> expr LEQ expr .)
@@ -2902,7 +2854,7 @@ state 98
   ! PERCENT         [ reduce using rule 50 (expr -> expr LEQ expr .) ]
   ! DOT             [ reduce using rule 50 (expr -> expr LEQ expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -2915,7 +2867,7 @@ state 99
 
     (51) expr -> expr GEQ expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2931,7 +2883,7 @@ state 99
 
     RBRACE          reduce using rule 51 (expr -> expr GEQ expr .)
     OR              reduce using rule 51 (expr -> expr GEQ expr .)
-    AND             reduce using rule 51 (expr -> expr GEQ expr .)
+    AMP             reduce using rule 51 (expr -> expr GEQ expr .)
     EQ              reduce using rule 51 (expr -> expr GEQ expr .)
     NEQ             reduce using rule 51 (expr -> expr GEQ expr .)
     LT              reduce using rule 51 (expr -> expr GEQ expr .)
@@ -2956,7 +2908,7 @@ state 99
   ! PERCENT         [ reduce using rule 51 (expr -> expr GEQ expr .) ]
   ! DOT             [ reduce using rule 51 (expr -> expr GEQ expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -2969,7 +2921,7 @@ state 100
 
     (52) expr -> expr PLUS expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -2985,7 +2937,7 @@ state 100
 
     RBRACE          reduce using rule 52 (expr -> expr PLUS expr .)
     OR              reduce using rule 52 (expr -> expr PLUS expr .)
-    AND             reduce using rule 52 (expr -> expr PLUS expr .)
+    AMP             reduce using rule 52 (expr -> expr PLUS expr .)
     EQ              reduce using rule 52 (expr -> expr PLUS expr .)
     NEQ             reduce using rule 52 (expr -> expr PLUS expr .)
     LT              reduce using rule 52 (expr -> expr PLUS expr .)
@@ -3008,7 +2960,7 @@ state 100
   ! PERCENT         [ reduce using rule 52 (expr -> expr PLUS expr .) ]
   ! DOT             [ reduce using rule 52 (expr -> expr PLUS expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -3023,7 +2975,7 @@ state 101
 
     (53) expr -> expr MINUS expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3039,7 +2991,7 @@ state 101
 
     RBRACE          reduce using rule 53 (expr -> expr MINUS expr .)
     OR              reduce using rule 53 (expr -> expr MINUS expr .)
-    AND             reduce using rule 53 (expr -> expr MINUS expr .)
+    AMP             reduce using rule 53 (expr -> expr MINUS expr .)
     EQ              reduce using rule 53 (expr -> expr MINUS expr .)
     NEQ             reduce using rule 53 (expr -> expr MINUS expr .)
     LT              reduce using rule 53 (expr -> expr MINUS expr .)
@@ -3062,7 +3014,7 @@ state 101
   ! PERCENT         [ reduce using rule 53 (expr -> expr MINUS expr .) ]
   ! DOT             [ reduce using rule 53 (expr -> expr MINUS expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -3077,7 +3029,7 @@ state 102
 
     (54) expr -> expr STAR expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3093,7 +3045,7 @@ state 102
 
     RBRACE          reduce using rule 54 (expr -> expr STAR expr .)
     OR              reduce using rule 54 (expr -> expr STAR expr .)
-    AND             reduce using rule 54 (expr -> expr STAR expr .)
+    AMP             reduce using rule 54 (expr -> expr STAR expr .)
     EQ              reduce using rule 54 (expr -> expr STAR expr .)
     NEQ             reduce using rule 54 (expr -> expr STAR expr .)
     LT              reduce using rule 54 (expr -> expr STAR expr .)
@@ -3113,7 +3065,7 @@ state 102
 
   ! DOT             [ reduce using rule 54 (expr -> expr STAR expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -3131,7 +3083,7 @@ state 103
 
     (55) expr -> expr SLASH expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3147,7 +3099,7 @@ state 103
 
     RBRACE          reduce using rule 55 (expr -> expr SLASH expr .)
     OR              reduce using rule 55 (expr -> expr SLASH expr .)
-    AND             reduce using rule 55 (expr -> expr SLASH expr .)
+    AMP             reduce using rule 55 (expr -> expr SLASH expr .)
     EQ              reduce using rule 55 (expr -> expr SLASH expr .)
     NEQ             reduce using rule 55 (expr -> expr SLASH expr .)
     LT              reduce using rule 55 (expr -> expr SLASH expr .)
@@ -3167,7 +3119,7 @@ state 103
 
   ! DOT             [ reduce using rule 55 (expr -> expr SLASH expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -3185,7 +3137,7 @@ state 104
 
     (56) expr -> expr PERCENT expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3201,7 +3153,7 @@ state 104
 
     RBRACE          reduce using rule 56 (expr -> expr PERCENT expr .)
     OR              reduce using rule 56 (expr -> expr PERCENT expr .)
-    AND             reduce using rule 56 (expr -> expr PERCENT expr .)
+    AMP             reduce using rule 56 (expr -> expr PERCENT expr .)
     EQ              reduce using rule 56 (expr -> expr PERCENT expr .)
     NEQ             reduce using rule 56 (expr -> expr PERCENT expr .)
     LT              reduce using rule 56 (expr -> expr PERCENT expr .)
@@ -3221,7 +3173,7 @@ state 104
 
   ! DOT             [ reduce using rule 56 (expr -> expr PERCENT expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -3239,14 +3191,14 @@ state 105
 
     (69) expr -> expr DOT IDENT . LPAREN arg_list RPAREN
 
-    LPAREN          shift and go to state 116
+    LPAREN          shift and go to state 117
 
 
 state 106
 
     (43) expr -> IDENT ASSIGN expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3261,12 +3213,12 @@ state 106
     (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
 
     RBRACE          reduce using rule 43 (expr -> IDENT ASSIGN expr .)
+    AMP             reduce using rule 43 (expr -> IDENT ASSIGN expr .)
     SEMICOLON       reduce using rule 43 (expr -> IDENT ASSIGN expr .)
     RPAREN          reduce using rule 43 (expr -> IDENT ASSIGN expr .)
     LBRACE          reduce using rule 43 (expr -> IDENT ASSIGN expr .)
     COMMA           reduce using rule 43 (expr -> IDENT ASSIGN expr .)
     OR              shift and go to state 61
-    AND             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -3281,7 +3233,6 @@ state 106
     DOT             shift and go to state 74
 
   ! OR              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
-  ! AND             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
   ! EQ              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
   ! NEQ             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
   ! LT              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
@@ -3294,6 +3245,7 @@ state 106
   ! SLASH           [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
   ! PERCENT         [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
   ! DOT             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! AMP             [ shift and go to state 62 ]
 
 
 state 107
@@ -3301,8 +3253,8 @@ state 107
     (68) expr -> IDENT LPAREN arg_list . RPAREN
     (72) arg_list -> arg_list . COMMA expr
 
-    RPAREN          shift and go to state 117
-    COMMA           shift and go to state 118
+    RPAREN          shift and go to state 118
+    COMMA           shift and go to state 119
 
 
 state 108
@@ -3317,7 +3269,7 @@ state 109
 
     (71) arg_list -> expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3334,7 +3286,7 @@ state 109
     RPAREN          reduce using rule 71 (arg_list -> expr .)
     COMMA           reduce using rule 71 (arg_list -> expr .)
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -3353,7 +3305,7 @@ state 110
 
     (60) expr -> AMP MUT expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3369,7 +3321,7 @@ state 110
 
     RBRACE          reduce using rule 60 (expr -> AMP MUT expr .)
     OR              reduce using rule 60 (expr -> AMP MUT expr .)
-    AND             reduce using rule 60 (expr -> AMP MUT expr .)
+    AMP             reduce using rule 60 (expr -> AMP MUT expr .)
     EQ              reduce using rule 60 (expr -> AMP MUT expr .)
     NEQ             reduce using rule 60 (expr -> AMP MUT expr .)
     LT              reduce using rule 60 (expr -> AMP MUT expr .)
@@ -3389,7 +3341,7 @@ state 110
 
   ! DOT             [ reduce using rule 60 (expr -> AMP MUT expr .) ]
   ! OR              [ shift and go to state 61 ]
-  ! AND             [ shift and go to state 62 ]
+  ! AMP             [ shift and go to state 62 ]
   ! EQ              [ shift and go to state 63 ]
   ! NEQ             [ shift and go to state 64 ]
   ! LT              [ shift and go to state 65 ]
@@ -3409,7 +3361,7 @@ state 111
 
     RBRACE          reduce using rule 67 (expr -> LPAREN expr RPAREN .)
     OR              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
-    AND             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    AMP             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
     EQ              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
     NEQ             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
     LT              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
@@ -3435,12 +3387,12 @@ state 112
     (31) opt_type_annotation -> . empty
     (73) empty -> .
 
-    COLON           shift and go to state 120
+    COLON           shift and go to state 121
     ASSIGN          reduce using rule 73 (empty -> .)
     SEMICOLON       reduce using rule 73 (empty -> .)
 
-    opt_type_annotation            shift and go to state 119
-    empty                          shift and go to state 121
+    opt_type_annotation            shift and go to state 120
+    empty                          shift and go to state 122
 
 state 113
 
@@ -3488,7 +3440,7 @@ state 114
     WHILE           reduce using rule 37 (if_stmt -> IF expr block .)
     LOOP            reduce using rule 37 (if_stmt -> IF expr block .)
     BREAK           reduce using rule 37 (if_stmt -> IF expr block .)
-    ELSE            shift and go to state 122
+    ELSE            shift and go to state 123
 
 
 state 115
@@ -3516,6 +3468,74 @@ state 115
 
 state 116
 
+    (45) expr -> expr AMP AMP expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AMP AMP expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+  ! shift/reduce conflict for OR resolved as shift
+  ! shift/reduce conflict for AMP resolved as shift
+  ! shift/reduce conflict for EQ resolved as shift
+  ! shift/reduce conflict for NEQ resolved as shift
+  ! shift/reduce conflict for LT resolved as shift
+  ! shift/reduce conflict for GT resolved as shift
+  ! shift/reduce conflict for LEQ resolved as shift
+  ! shift/reduce conflict for GEQ resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for STAR resolved as shift
+  ! shift/reduce conflict for SLASH resolved as shift
+  ! shift/reduce conflict for PERCENT resolved as shift
+  ! shift/reduce conflict for DOT resolved as shift
+    RBRACE          reduce using rule 45 (expr -> expr AMP AMP expr .)
+    SEMICOLON       reduce using rule 45 (expr -> expr AMP AMP expr .)
+    RPAREN          reduce using rule 45 (expr -> expr AMP AMP expr .)
+    LBRACE          reduce using rule 45 (expr -> expr AMP AMP expr .)
+    COMMA           reduce using rule 45 (expr -> expr AMP AMP expr .)
+    OR              shift and go to state 61
+    AMP             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! OR              [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! AMP             [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! EQ              [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! NEQ             [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! LT              [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! GT              [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! LEQ             [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! GEQ             [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! PLUS            [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! MINUS           [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! STAR            [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! SLASH           [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! PERCENT         [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+  ! DOT             [ reduce using rule 45 (expr -> expr AMP AMP expr .) ]
+
+
+state 117
+
     (69) expr -> expr DOT IDENT LPAREN . arg_list RPAREN
     (70) arg_list -> . empty
     (71) arg_list -> . expr
@@ -3523,7 +3543,7 @@ state 116
     (73) empty -> .
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -3552,9 +3572,9 @@ state 116
     RPAREN          reduce using rule 73 (empty -> .)
     COMMA           reduce using rule 73 (empty -> .)
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -3563,16 +3583,16 @@ state 116
     LPAREN          shift and go to state 45
 
     expr                           shift and go to state 109
-    arg_list                       shift and go to state 123
+    arg_list                       shift and go to state 124
     empty                          shift and go to state 108
 
-state 117
+state 118
 
     (68) expr -> IDENT LPAREN arg_list RPAREN .
 
     RBRACE          reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
     OR              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
-    AND             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    AMP             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
     EQ              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
     NEQ             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
     LT              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
@@ -3591,12 +3611,12 @@ state 117
     COMMA           reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
 
 
-state 118
+state 119
 
     (72) arg_list -> arg_list COMMA . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -3623,9 +3643,9 @@ state 118
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -3633,22 +3653,22 @@ state 118
     FALSE           shift and go to state 44
     LPAREN          shift and go to state 45
 
-    expr                           shift and go to state 124
+    expr                           shift and go to state 125
 
-state 119
+state 120
 
     (27) let_stmt -> LET opt_mut IDENT opt_type_annotation . opt_init SEMICOLON
     (32) opt_init -> . ASSIGN expr
     (33) opt_init -> . empty
     (73) empty -> .
 
-    ASSIGN          shift and go to state 126
+    ASSIGN          shift and go to state 127
     SEMICOLON       reduce using rule 73 (empty -> .)
 
-    opt_init                       shift and go to state 125
-    empty                          shift and go to state 127
+    opt_init                       shift and go to state 126
+    empty                          shift and go to state 128
 
-state 120
+state 121
 
     (30) opt_type_annotation -> COLON . type
     (11) type -> . IDENT
@@ -3660,9 +3680,9 @@ state 120
     IDENT           shift and go to state 16
     AMP             shift and go to state 18
 
-    type                           shift and go to state 128
+    type                           shift and go to state 129
 
-state 121
+state 122
 
     (31) opt_type_annotation -> empty .
 
@@ -3670,7 +3690,7 @@ state 121
     SEMICOLON       reduce using rule 31 (opt_type_annotation -> empty .)
 
 
-state 122
+state 123
 
     (38) if_stmt -> IF expr block ELSE . block
     (39) if_stmt -> IF expr block ELSE . if_stmt
@@ -3683,23 +3703,23 @@ state 122
     LBRACE          shift and go to state 21
     IF              shift and go to state 55
 
-    block                          shift and go to state 129
-    if_stmt                        shift and go to state 130
+    block                          shift and go to state 130
+    if_stmt                        shift and go to state 131
 
-state 123
+state 124
 
     (69) expr -> expr DOT IDENT LPAREN arg_list . RPAREN
     (72) arg_list -> arg_list . COMMA expr
 
-    RPAREN          shift and go to state 131
-    COMMA           shift and go to state 118
+    RPAREN          shift and go to state 132
+    COMMA           shift and go to state 119
 
 
-state 124
+state 125
 
     (72) arg_list -> arg_list COMMA expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3716,7 +3736,7 @@ state 124
     RPAREN          reduce using rule 72 (arg_list -> arg_list COMMA expr .)
     COMMA           reduce using rule 72 (arg_list -> arg_list COMMA expr .)
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -3731,19 +3751,19 @@ state 124
     DOT             shift and go to state 74
 
 
-state 125
+state 126
 
     (27) let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init . SEMICOLON
 
-    SEMICOLON       shift and go to state 132
+    SEMICOLON       shift and go to state 133
 
 
-state 126
+state 127
 
     (32) opt_init -> ASSIGN . expr
     (43) expr -> . IDENT ASSIGN expr
     (44) expr -> . expr OR expr
-    (45) expr -> . expr AND expr
+    (45) expr -> . expr AMP AMP expr
     (46) expr -> . expr EQ expr
     (47) expr -> . expr NEQ expr
     (48) expr -> . expr LT expr
@@ -3770,9 +3790,9 @@ state 126
     (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
 
     IDENT           shift and go to state 36
-    MINUS           shift and go to state 37
-    NOT             shift and go to state 38
-    AMP             shift and go to state 39
+    MINUS           shift and go to state 38
+    NOT             shift and go to state 39
+    AMP             shift and go to state 37
     INTEGER         shift and go to state 40
     FLOAT           shift and go to state 41
     STRING          shift and go to state 42
@@ -3780,16 +3800,16 @@ state 126
     FALSE           shift and go to state 44
     LPAREN          shift and go to state 45
 
-    expr                           shift and go to state 133
+    expr                           shift and go to state 134
 
-state 127
+state 128
 
     (33) opt_init -> empty .
 
     SEMICOLON       reduce using rule 33 (opt_init -> empty .)
 
 
-state 128
+state 129
 
     (30) opt_type_annotation -> COLON type .
 
@@ -3797,7 +3817,7 @@ state 128
     SEMICOLON       reduce using rule 30 (opt_type_annotation -> COLON type .)
 
 
-state 129
+state 130
 
     (38) if_stmt -> IF expr block ELSE block .
 
@@ -3820,7 +3840,7 @@ state 129
     BREAK           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
 
 
-state 130
+state 131
 
     (39) if_stmt -> IF expr block ELSE if_stmt .
 
@@ -3843,13 +3863,13 @@ state 130
     BREAK           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
 
 
-state 131
+state 132
 
     (69) expr -> expr DOT IDENT LPAREN arg_list RPAREN .
 
     RBRACE          reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
     OR              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
-    AND             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    AMP             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
     EQ              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
     NEQ             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
     LT              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
@@ -3868,7 +3888,7 @@ state 131
     COMMA           reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
 
 
-state 132
+state 133
 
     (27) let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .
 
@@ -3891,11 +3911,11 @@ state 132
     BREAK           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
 
 
-state 133
+state 134
 
     (32) opt_init -> ASSIGN expr .
     (44) expr -> expr . OR expr
-    (45) expr -> expr . AND expr
+    (45) expr -> expr . AMP AMP expr
     (46) expr -> expr . EQ expr
     (47) expr -> expr . NEQ expr
     (48) expr -> expr . LT expr
@@ -3911,7 +3931,7 @@ state 133
 
     SEMICOLON       reduce using rule 32 (opt_init -> ASSIGN expr .)
     OR              shift and go to state 61
-    AND             shift and go to state 62
+    AMP             shift and go to state 62
     EQ              shift and go to state 63
     NEQ             shift and go to state 64
     LT              shift and go to state 65
@@ -3925,3 +3945,20 @@ state 133
     PERCENT         shift and go to state 73
     DOT             shift and go to state 74
 
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for OR in state 116 resolved as shift
+WARNING: shift/reduce conflict for AMP in state 116 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 116 resolved as shift
+WARNING: shift/reduce conflict for NEQ in state 116 resolved as shift
+WARNING: shift/reduce conflict for LT in state 116 resolved as shift
+WARNING: shift/reduce conflict for GT in state 116 resolved as shift
+WARNING: shift/reduce conflict for LEQ in state 116 resolved as shift
+WARNING: shift/reduce conflict for GEQ in state 116 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 116 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 116 resolved as shift
+WARNING: shift/reduce conflict for STAR in state 116 resolved as shift
+WARNING: shift/reduce conflict for SLASH in state 116 resolved as shift
+WARNING: shift/reduce conflict for PERCENT in state 116 resolved as shift
+WARNING: shift/reduce conflict for DOT in state 116 resolved as shift

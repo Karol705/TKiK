@@ -162,7 +162,7 @@ class Parser:
     precedence = (
         ('right',  'ASSIGN'),
         ('left',   'OR'),
-        ('left',   'AND'),
+        ('left',   'AMP'),
         ('nonassoc', 'EQ', 'NEQ'),
         ('nonassoc', 'LT', 'GT', 'LEQ', 'GEQ'),
         ('left',   'PLUS', 'MINUS'),
@@ -177,7 +177,7 @@ class Parser:
 
     def p_expr_binop(self,p):
         """expr : expr OR  expr
-                | expr AND expr
+                | expr AMP AMP expr
                 | expr EQ  expr
                 | expr NEQ expr
                 | expr LT  expr
@@ -189,7 +189,10 @@ class Parser:
                 | expr STAR   expr
                 | expr SLASH  expr
                 | expr PERCENT expr"""
-        p[0] = ('binop', p[2], p[1], p[3])
+        if len(p) == 5:  # AMP AMP case
+            p[0] = ('binop', '&&', p[1], p[4])
+        else:
+            p[0] = ('binop', p[2], p[1], p[3])
 
     def p_expr_unary_minus(self,p):
         """expr : MINUS expr %prec UMINUS"""

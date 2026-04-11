@@ -19,8 +19,7 @@ class Lexer:
     tokens = (
         list({
             'IDENT', 'INTEGER', 'FLOAT', 'STRING', 'LIFETIME',
-            'EQ', 'NEQ', 'LEQ', 'GEQ', 'LT', 'GT',
-            'AND', 'OR', 'NOT', 'AMP',
+            'EQ', 'NEQ', 'LEQ', 'GEQ', 'LT', 'GT', 'OR', 'NOT', 'AMP',
             'PLUS', 'MINUS', 'STAR', 'SLASH', 'PERCENT',
             'ASSIGN',
             'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
@@ -61,7 +60,6 @@ class Lexer:
     t_NEQ     = r'!='
     t_LEQ     = r'<='
     t_GEQ     = r'>='
-    t_AND     = r'&&'
     t_OR      = r'\|\|'
 
     # Operatory jednoznakowe

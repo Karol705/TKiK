@@ -1,8 +1,4 @@
-# Tokeny i gramatyka — podzbiór języka Rust
-
-> Dokument opisuje tokeny leksera oraz reguły gramatyki dla narzędzia `rust_state_tracker`.
-> Implementacja opiera się na bibliotece **PLY** (Python Lex-Yacc).
-> Zakres języka jest celowo ograniczony do elementów niezbędnych do śledzenia stanów ownership/borrowing.
+# Tokeny i gramatyka
 
 ---
 
@@ -82,18 +78,18 @@ def t_IDENT(t):
 
 ### 1.3 Operatory
 
-| Token     | Symbol | Token    | Symbol |
-| --------- | ------ | -------- | ------ |
-| `EQ`      | `==`   | `NEQ`    | `!=`   |
-| `LEQ`     | `<=`   | `GEQ`    | `>=`   |
-| `LT`      | `<`    | `GT`     | `>`    |
-| `AND`     | `&&`   | `OR`     | `\|\|` |
-| `NOT`     | `!`    | `AMP`    | `&`    |
-| `PLUS`    | `+`    | `MINUS`  | `-`    |
-| `STAR`    | `*`    | `SLASH`  | `/`    |
-| `PERCENT` | `%`    | `ASSIGN` | `=`    |
+| Token    | Symbol | Token     | Symbol |
+| -------- | ------ | --------- | ------ |
+| `EQ`     | `==`   | `NEQ`     | `!=`   |
+| `LEQ`    | `<=`   | `GEQ`     | `>=`   |
+| `LT`     | `<`    | `GT`      | `>`    |
+| `OR`     | `\|\|` | `NOT`     | `!`    |
+| `AMP`    | `&`    | `PLUS`    | `+`    |
+| `MINUS`  | `-`    | `STAR`    | `*`    |
+| `SLASH`  | `/`    | `PERCENT` | `%`    |
+| `ASSIGN` | `=`    |           |        |
 
-> Tokeny wieloznakowe (`==`, `!=`, `<=`, `>=`, `&&`, `||`) **muszą** być zdefiniowane jako funkcje lub wymienione przed jednozbiorowymi odpowiednikami, aby PLY dopasował dłuższy wariant.
+> Tokeny wieloznakowe (`==`, `!=`, `<=`, `>=`, `||`) **muszą** być zdefiniowane jako funkcje lub wymienione przed jednozbiorowymi odpowiednikami, aby PLY dopasował dłuższy wariant.
 
 ```python
 # Operatory wieloznakowe — wymagają funkcji lub jawnej kolejności
@@ -101,7 +97,6 @@ t_EQ      = r'=='
 t_NEQ     = r'!='
 t_LEQ     = r'<='
 t_GEQ     = r'>='
-t_AND     = r'&&'
 t_OR      = r'\|\|'
 
 # Operatory jednoznakowe
@@ -177,7 +172,7 @@ tokens = [
     'IDENT', 'INTEGER', 'FLOAT', 'STRING', 'LIFETIME',
     # Operatory
     'EQ', 'NEQ', 'LEQ', 'GEQ', 'LT', 'GT',
-    'AND', 'OR', 'NOT', 'AMP',
+    'OR', 'NOT', 'AMP',
     'PLUS', 'MINUS', 'STAR', 'SLASH', 'PERCENT',
     'ASSIGN',
     # Znaki przestankowe
@@ -357,25 +352,7 @@ let_stmt    → 'let' IDENT ':' type '=' expr ';'
             | 'let' 'mut' IDENT ';'
 ```
 
-```python
-def p_let_stmt(p):
-    """let_stmt : LET IDENT COLON type ASSIGN expr SEMICOLON
-                | LET IDENT ASSIGN expr SEMICOLON
-                | LET MUT IDENT COLON type ASSIGN expr SEMICOLON
-                | LET MUT IDENT ASSIGN expr SEMICOLON
-                | LET IDENT SEMICOLON
-                | LET MUT IDENT SEMICOLON"""
-    # Uproszczona obsługa — pełna implementacja wymaga sprawdzenia len(p)
-    mutable = (p[2] == 'mut')
-    if mutable:
-        name = p[3]
-        # rozróżnienie wariantów na podstawie długości
-    else:
-        name = p[2]
-    p[0] = ('let', mutable, name, ...)   # szczegóły zależą od wariantu
-```
-
-> **Wskazówka implementacyjna:** Zamiast jednej dużej reguły, wygodniej zdefiniować pomocnicze reguły `opt_type` i `opt_init` — zmniejsza to liczbę kombinacji.
+> **Implementacyja:** Zamiast jednej dużej reguły, wygodniej zdefiniować pomocnicze reguły `opt_type` i `opt_init` — zmniejsza to liczbę kombinacji.
 
 ```python
 def p_let_stmt_full(p):
@@ -567,7 +544,7 @@ arg_list        → ε
 precedence = (
     ('right',  'ASSIGN'),
     ('left',   'OR'),
-    ('left',   'AND'),
+    ('left',   'AMP'), # Priorytet dla AND (&&)
     ('nonassoc', 'EQ', 'NEQ'),
     ('nonassoc', 'LT', 'GT', 'LEQ', 'GEQ'),
     ('left',   'PLUS', 'MINUS'),
@@ -582,7 +559,7 @@ def p_expr_assign(p):
 
 def p_expr_binop(p):
     """expr : expr OR  expr
-            | expr AND expr
+            | expr AMP AMP expr
             | expr EQ  expr
             | expr NEQ expr
             | expr LT  expr
@@ -594,7 +571,11 @@ def p_expr_binop(p):
             | expr STAR   expr
             | expr SLASH  expr
             | expr PERCENT expr"""
-    p[0] = ('binop', p[2], p[1], p[3])
+    if len(p) == 5:  # AMP AMP case
+        p[0] = ('binop', '&&', p[1], p[4])
+    else:
+        p[0] = ('binop', p[2], p[1], p[3])
+
 
 def p_expr_unary_minus(p):
     """expr : MINUS expr %prec UMINUS"""
