@@ -2,340 +2,3926 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    KW_ELSE
-    KW_EXTERN
-    KW_FOR
-    KW_IF
-    KW_IN
-    KW_LOOP
-    KW_MATCH
-    KW_MOVE
-    KW_REF
-    KW_STATIC
-    KW_UNSAFE
-    KW_WHILE
-    LIFETIME_ANON
-    LIT_BYTE
-    LIT_BYTE_STR
-    OP_AT
-    OP_CARET
-    OP_FAT_ARROW
-    OP_PIPE
-    OP_SHL
-    OP_SHR
-    OP_TILDE
-    UNDERSCORE
+    DCOLON
 
 Grammar
 
-Rule 0     S' -> empty
-Rule 1     empty -> <empty>
-Rule 2     program -> program item
-Rule 3     program -> empty
+Rule 0     S' -> program
+Rule 1     program -> item_list
+Rule 2     item_list -> item_list item
+Rule 3     item_list -> empty
 Rule 4     item -> fn_def
-Rule 5     item -> struct_def
-Rule 6     item -> impl_block
-Rule 7     item -> use_decl
-Rule 8     item -> type_alias
-Rule 9     item -> const_def
-Rule 10    item -> mod_block
-Rule 11    item -> attr item
-Rule 12    attr -> OP_HASH LBRACKET attr_body RBRACKET
-Rule 13    attr_body -> IDENT
-Rule 14    attr_body -> IDENT LPAREN attr_args RPAREN
-Rule 15    attr_args -> attr_args IDENT
-Rule 16    attr_args -> empty
-Rule 17    visibility -> KW_PUB
-Rule 18    visibility -> KW_PUB LPAREN KW_SELF RPAREN
-Rule 19    visibility -> KW_PUB LPAREN IDENT RPAREN
-Rule 20    visibility -> empty
-Rule 21    fn_def -> visibility KW_FN IDENT generic_params_opt LPAREN param_list_opt RPAREN return_type_opt where_clause_opt block
-Rule 22    param_list_opt -> param_list
-Rule 23    param_list_opt -> empty
-Rule 24    param_list -> param
-Rule 25    param_list -> param_list COMMA param
-Rule 26    param -> KW_SELF
-Rule 27    param -> OP_AMP lifetime_opt KW_MUT_opt KW_SELF
-Rule 28    param -> pattern COLON type
-Rule 29    return_type_opt -> return_type
-Rule 30    return_type_opt -> empty
-Rule 31    return_type -> OP_ARROW type
-Rule 32    generic_params_opt -> generic_params
-Rule 33    generic_params_opt -> empty
-Rule 34    generic_params -> OP_LT generic_param_list OP_GT
-Rule 35    generic_param_list -> generic_param
-Rule 36    generic_param_list -> generic_param_list COMMA generic_param
-Rule 37    generic_param -> LIFETIME_IDENT
-Rule 38    generic_param -> IDENT
-Rule 39    generic_param -> IDENT COLON type
-Rule 40    where_clause_opt -> where_clause
-Rule 41    where_clause_opt -> empty
-Rule 42    where_clause -> IDENT where_pred_list
-Rule 43    where_pred_list -> where_pred
-Rule 44    where_pred_list -> where_pred_list COMMA where_pred
-Rule 45    where_pred -> type COLON type
-Rule 46    where_pred -> LIFETIME_IDENT COLON LIFETIME_IDENT
-Rule 47    struct_def -> visibility KW_STRUCT IDENT generic_params_opt struct_body
-Rule 48    struct_def -> visibility KW_STRUCT IDENT generic_params_opt SEMI
-Rule 49    struct_body -> LBRACE struct_fields_opt RBRACE
-Rule 50    struct_fields_opt -> struct_field
-Rule 51    struct_fields_opt -> struct_fields_opt COMMA struct_field
-Rule 52    struct_fields_opt -> empty
-Rule 53    struct_field -> visibility IDENT COLON type
-Rule 54    impl_block -> KW_IMPL generic_params_opt type LBRACE impl_items RBRACE
-Rule 55    impl_items -> impl_item
-Rule 56    impl_items -> impl_items impl_item
-Rule 57    impl_items -> empty
-Rule 58    impl_item -> fn_def
-Rule 59    impl_item -> type_alias
-Rule 60    impl_item -> attr impl_item
-Rule 61    use_decl -> visibility KW_USE use_tree SEMI
-Rule 62    use_tree -> path
-Rule 63    use_tree -> LBRACE use_tree_list RBRACE
-Rule 64    use_tree_list -> use_tree
-Rule 65    use_tree_list -> use_tree_list COMMA use_tree
-Rule 66    path -> IDENT
-Rule 67    path -> path OP_PATH IDENT
-Rule 68    type_alias -> visibility KW_TYPE IDENT OP_ASSIGN type SEMI
-Rule 69    const_def -> visibility KW_CONST IDENT COLON type OP_ASSIGN expr SEMI
-Rule 70    mod_block -> visibility KW_MOD IDENT LBRACE program RBRACE
-Rule 71    mod_block -> visibility KW_MOD IDENT SEMI
-Rule 72    block -> LBRACE stmt_list RBRACE
-Rule 73    stmt_list -> stmt
-Rule 74    stmt_list -> stmt_list stmt
-Rule 75    stmt_list -> empty
-Rule 76    stmt -> let_stmt
-Rule 77    stmt -> expr_stmt
-Rule 78    stmt -> return_stmt
-Rule 79    stmt -> break_stmt
-Rule 80    stmt -> continue_stmt
-Rule 81    stmt -> item
-Rule 82    let_stmt -> KW_LET KW_MUT_opt pattern SEMI
-Rule 83    expr_stmt -> expr SEMI
-Rule 84    return_stmt -> KW_RETURN expr_opt SEMI
-Rule 85    break_stmt -> KW_BREAK expr_opt SEMI
-Rule 86    continue_stmt -> KW_CONTINUE SEMI
-Rule 87    expr -> assign_expr
-Rule 88    assign_expr -> range_expr
-Rule 89    assign_expr -> range_expr assign_op assign_expr
-Rule 90    assign_op -> OP_ASSIGN
-Rule 91    assign_op -> OP_ADD_ASSIGN
-Rule 92    assign_op -> OP_SUB_ASSIGN
-Rule 93    assign_op -> OP_MUL_ASSIGN
-Rule 94    assign_op -> OP_DIV_ASSIGN
-Rule 95    assign_op -> OP_REM_ASSIGN
-Rule 96    range_expr -> or_expr
-Rule 97    range_expr -> or_expr OP_DOTDOT or_expr
-Rule 98    range_expr -> or_expr OP_DOTDOTEQ or_expr
-Rule 99    or_expr -> and_expr
-Rule 100   or_expr -> or_expr OP_OR_OR and_expr
-Rule 101   and_expr -> cmp_expr
-Rule 102   and_expr -> and_expr OP_AND_AND cmp_expr
-Rule 103   cmp_expr -> add_expr
-Rule 104   cmp_expr -> cmp_expr cmp_op add_expr
-Rule 105   cmp_op -> OP_EQ_EQ
-Rule 106   cmp_op -> OP_NE
-Rule 107   cmp_op -> OP_LT
-Rule 108   cmp_op -> OP_GT
-Rule 109   cmp_op -> OP_LE
-Rule 110   cmp_op -> OP_GE
-Rule 111   add_expr -> mul_expr
-Rule 112   add_expr -> add_expr OP_PLUS mul_expr
-Rule 113   add_expr -> add_expr OP_MINUS mul_expr
-Rule 114   mul_expr -> cast_expr
-Rule 115   mul_expr -> mul_expr OP_STAR cast_expr
-Rule 116   mul_expr -> mul_expr OP_SLASH cast_expr
-Rule 117   mul_expr -> mul_expr OP_PERCENT cast_expr
-Rule 118   cast_expr -> unary_expr
-Rule 119   cast_expr -> cast_expr KW_AS type
-Rule 120   unary_expr -> OP_MINUS unary_expr
-Rule 121   unary_expr -> OP_BANG unary_expr
-Rule 122   unary_expr -> OP_STAR unary_expr
-Rule 123   unary_expr -> postfix_expr
-Rule 124   postfix_expr -> primary_expr
-Rule 125   postfix_expr -> postfix_expr postfix_op
-Rule 126   postfix_op -> DOT IDENT
-Rule 127   postfix_op -> LPAREN RPAREN
-Rule 128   postfix_op -> OP_QUESTION
-Rule 129   primary_expr -> literal
-Rule 130   primary_expr -> IDENT
-Rule 131   primary_expr -> path
-Rule 132   primary_expr -> block
-Rule 133   primary_expr -> LPAREN expr RPAREN
-Rule 134   literal -> LIT_INT
-Rule 135   literal -> LIT_INT_HEX
-Rule 136   literal -> LIT_INT_BIN
-Rule 137   literal -> LIT_FLOAT
-Rule 138   literal -> LIT_STR
-Rule 139   literal -> LIT_STR_RAW
-Rule 140   literal -> LIT_CHAR
-Rule 141   literal -> KW_TRUE
-Rule 142   literal -> KW_FALSE
-Rule 143   type -> IDENT
-Rule 144   type -> OP_AMP type
-Rule 145   type -> OP_STAR type
-Rule 146   type -> LPAREN type RPAREN
-Rule 147   expr_opt -> expr
-Rule 148   expr_opt -> empty
-Rule 149   lifetime_opt -> LIFETIME_IDENT
-Rule 150   lifetime_opt -> empty
-Rule 151   KW_MUT_opt -> KW_MUT
-Rule 152   KW_MUT_opt -> empty
+Rule 5     fn_def -> FN IDENT LPAREN param_list RPAREN ARROW type block
+Rule 6     fn_def -> FN IDENT LPAREN param_list RPAREN block
+Rule 7     param_list -> empty
+Rule 8     param_list -> param
+Rule 9     param_list -> param_list COMMA param
+Rule 10    param -> IDENT COLON type
+Rule 11    type -> IDENT
+Rule 12    type -> AMP type
+Rule 13    type -> AMP MUT type
+Rule 14    type -> AMP LIFETIME type
+Rule 15    type -> AMP LIFETIME MUT type
+Rule 16    block -> LBRACE stmt_list RBRACE
+Rule 17    block -> LBRACE stmt_list expr RBRACE
+Rule 18    stmt_list -> stmt_list stmt
+Rule 19    stmt_list -> empty
+Rule 20    stmt -> let_stmt
+Rule 21    stmt -> expr_stmt
+Rule 22    stmt -> return_stmt
+Rule 23    stmt -> if_stmt
+Rule 24    stmt -> while_stmt
+Rule 25    stmt -> loop_stmt
+Rule 26    stmt -> break_stmt
+Rule 27    let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON
+Rule 28    opt_mut -> MUT
+Rule 29    opt_mut -> empty
+Rule 30    opt_type_annotation -> COLON type
+Rule 31    opt_type_annotation -> empty
+Rule 32    opt_init -> ASSIGN expr
+Rule 33    opt_init -> empty
+Rule 34    expr_stmt -> expr SEMICOLON
+Rule 35    return_stmt -> RETURN expr SEMICOLON
+Rule 36    return_stmt -> RETURN SEMICOLON
+Rule 37    if_stmt -> IF expr block
+Rule 38    if_stmt -> IF expr block ELSE block
+Rule 39    if_stmt -> IF expr block ELSE if_stmt
+Rule 40    while_stmt -> WHILE expr block
+Rule 41    loop_stmt -> LOOP block
+Rule 42    break_stmt -> BREAK SEMICOLON
+Rule 43    expr -> IDENT ASSIGN expr
+Rule 44    expr -> expr OR expr
+Rule 45    expr -> expr AND expr
+Rule 46    expr -> expr EQ expr
+Rule 47    expr -> expr NEQ expr
+Rule 48    expr -> expr LT expr
+Rule 49    expr -> expr GT expr
+Rule 50    expr -> expr LEQ expr
+Rule 51    expr -> expr GEQ expr
+Rule 52    expr -> expr PLUS expr
+Rule 53    expr -> expr MINUS expr
+Rule 54    expr -> expr STAR expr
+Rule 55    expr -> expr SLASH expr
+Rule 56    expr -> expr PERCENT expr
+Rule 57    expr -> MINUS expr
+Rule 58    expr -> NOT expr
+Rule 59    expr -> AMP expr
+Rule 60    expr -> AMP MUT expr
+Rule 61    expr -> INTEGER
+Rule 62    expr -> FLOAT
+Rule 63    expr -> STRING
+Rule 64    expr -> TRUE
+Rule 65    expr -> FALSE
+Rule 66    expr -> IDENT
+Rule 67    expr -> LPAREN expr RPAREN
+Rule 68    expr -> IDENT LPAREN arg_list RPAREN
+Rule 69    expr -> expr DOT IDENT LPAREN arg_list RPAREN
+Rule 70    arg_list -> empty
+Rule 71    arg_list -> expr
+Rule 72    arg_list -> arg_list COMMA expr
+Rule 73    empty -> <empty>
 
 Terminals, with rules where they appear
 
-COLON                : 28 39 45 46 53 69
-COMMA                : 25 36 44 51 65
-DOT                  : 126
-IDENT                : 13 14 15 19 21 38 39 42 47 48 53 66 67 68 69 70 71 126 130 143
-KW_AS                : 119
-KW_BREAK             : 85
-KW_CONST             : 69
-KW_CONTINUE          : 86
-KW_ELSE              : 
-KW_EXTERN            : 
-KW_FALSE             : 142
-KW_FN                : 21
-KW_FOR               : 
-KW_IF                : 
-KW_IMPL              : 54
-KW_IN                : 
-KW_LET               : 82
-KW_LOOP              : 
-KW_MATCH             : 
-KW_MOD               : 70 71
-KW_MOVE              : 
-KW_MUT               : 151
-KW_PUB               : 17 18 19
-KW_REF               : 
-KW_RETURN            : 84
-KW_SELF              : 18 26 27
-KW_STATIC            : 
-KW_STRUCT            : 47 48
-KW_TRUE              : 141
-KW_TYPE              : 68
-KW_UNSAFE            : 
-KW_USE               : 61
-KW_WHILE             : 
-LBRACE               : 49 54 63 70 72
-LBRACKET             : 12
-LIFETIME_ANON        : 
-LIFETIME_IDENT       : 37 46 46 149
-LIT_BYTE             : 
-LIT_BYTE_STR         : 
-LIT_CHAR             : 140
-LIT_FLOAT            : 137
-LIT_INT              : 134
-LIT_INT_BIN          : 136
-LIT_INT_HEX          : 135
-LIT_STR              : 138
-LIT_STR_RAW          : 139
-LPAREN               : 14 18 19 21 127 133 146
-OP_ADD_ASSIGN        : 91
-OP_AMP               : 27 144
-OP_AND_AND           : 102
-OP_ARROW             : 31
-OP_ASSIGN            : 68 69 90
-OP_AT                : 
-OP_BANG              : 121
-OP_CARET             : 
-OP_DIV_ASSIGN        : 94
-OP_DOTDOT            : 97
-OP_DOTDOTEQ          : 98
-OP_EQ_EQ             : 105
-OP_FAT_ARROW         : 
-OP_GE                : 110
-OP_GT                : 34 108
-OP_HASH              : 12
-OP_LE                : 109
-OP_LT                : 34 107
-OP_MINUS             : 113 120
-OP_MUL_ASSIGN        : 93
-OP_NE                : 106
-OP_OR_OR             : 100
-OP_PATH              : 67
-OP_PERCENT           : 117
-OP_PIPE              : 
-OP_PLUS              : 112
-OP_QUESTION          : 128
-OP_REM_ASSIGN        : 95
-OP_SHL               : 
-OP_SHR               : 
-OP_SLASH             : 116
-OP_STAR              : 115 122 145
-OP_SUB_ASSIGN        : 92
-OP_TILDE             : 
-RBRACE               : 49 54 63 70 72
-RBRACKET             : 12
-RPAREN               : 14 18 19 21 127 133 146
-SEMI                 : 48 61 68 69 71 82 83 84 85 86
-UNDERSCORE           : 
+AMP                  : 12 13 14 15 59 60
+AND                  : 45
+ARROW                : 5
+ASSIGN               : 32 43
+BREAK                : 42
+COLON                : 10 30
+COMMA                : 9 72
+DCOLON               : 
+DOT                  : 69
+ELSE                 : 38 39
+EQ                   : 46
+FALSE                : 65
+FLOAT                : 62
+FN                   : 5 6
+GEQ                  : 51
+GT                   : 49
+IDENT                : 5 6 10 11 27 43 66 68 69
+IF                   : 37 38 39
+INTEGER              : 61
+LBRACE               : 16 17
+LEQ                  : 50
+LET                  : 27
+LIFETIME             : 14 15
+LOOP                 : 41
+LPAREN               : 5 6 67 68 69
+LT                   : 48
+MINUS                : 53 57
+MUT                  : 13 15 28 60
+NEQ                  : 47
+NOT                  : 58
+OR                   : 44
+PERCENT              : 56
+PLUS                 : 52
+RBRACE               : 16 17
+RETURN               : 35 36
+RPAREN               : 5 6 67 68 69
+SEMICOLON            : 27 34 35 36 42
+SLASH                : 55
+STAR                 : 54
+STRING               : 63
+TRUE                 : 64
+WHILE                : 40
 error                : 
 
 Nonterminals, with rules where they appear
 
-KW_MUT_opt           : 27 82
-add_expr             : 103 104 112 113
-and_expr             : 99 100 102
-assign_expr          : 87 89
-assign_op            : 89
-attr                 : 11 60
-attr_args            : 14 15
-attr_body            : 12
-block                : 21 132
-break_stmt           : 79
-cast_expr            : 114 115 116 117 119
-cmp_expr             : 101 102 104
-cmp_op               : 104
-const_def            : 9
-continue_stmt        : 80
-empty                : 3 16 20 23 30 33 41 52 57 75 148 150 152 0
-expr                 : 69 83 133 147
-expr_opt             : 84 85
-expr_stmt            : 77
-fn_def               : 4 58
-generic_param        : 35 36
-generic_param_list   : 34 36
-generic_params       : 32
-generic_params_opt   : 21 47 48 54
-impl_block           : 6
-impl_item            : 55 56 60
-impl_items           : 54 56
-item                 : 2 11 81
-let_stmt             : 76
-lifetime_opt         : 27
-literal              : 129
-mod_block            : 10
-mul_expr             : 111 112 113 115 116 117
-or_expr              : 96 97 97 98 98 100
-param                : 24 25
-param_list           : 22 25
-param_list_opt       : 21
-path                 : 62 67 131
-pattern              : 28 82
-postfix_expr         : 123 125
-postfix_op           : 125
-primary_expr         : 124
-program              : 2 70
-range_expr           : 88 89
-return_stmt          : 78
-return_type          : 29
-return_type_opt      : 21
-stmt                 : 73 74
-stmt_list            : 72 74
-struct_body          : 47
-struct_def           : 5
-struct_field         : 50 51
-struct_fields_opt    : 49 51
-type                 : 28 31 39 45 45 53 54 68 69 119 144 145 146
-type_alias           : 8 59
-unary_expr           : 118 120 121 122
-use_decl             : 7
-use_tree             : 61 64 65
-use_tree_list        : 63 65
-visibility           : 21 47 48 53 61 68 69 70 71
-where_clause         : 40
-where_clause_opt     : 21
-where_pred           : 43 44
-where_pred_list      : 42 44
+arg_list             : 68 69 72
+block                : 5 6 37 38 38 39 40 41
+break_stmt           : 26
+empty                : 3 7 19 29 31 33 70
+expr                 : 17 32 34 35 37 38 39 40 43 44 44 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 56 56 57 58 59 60 67 69 71 72
+expr_stmt            : 21
+fn_def               : 4
+if_stmt              : 23 39
+item                 : 2
+item_list            : 1 2
+let_stmt             : 20
+loop_stmt            : 25
+opt_init             : 27
+opt_mut              : 27
+opt_type_annotation  : 27
+param                : 8 9
+param_list           : 5 6 9
+program              : 0
+return_stmt          : 22
+stmt                 : 18
+stmt_list            : 16 17 18
+type                 : 5 10 12 13 14 15 30
+while_stmt           : 24
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . item_list
+    (2) item_list -> . item_list item
+    (3) item_list -> . empty
+    (73) empty -> .
+
+    FN              reduce using rule 73 (empty -> .)
+    $end            reduce using rule 73 (empty -> .)
+
+    program                        shift and go to state 1
+    item_list                      shift and go to state 2
+    empty                          shift and go to state 3
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> item_list .
+    (2) item_list -> item_list . item
+    (4) item -> . fn_def
+    (5) fn_def -> . FN IDENT LPAREN param_list RPAREN ARROW type block
+    (6) fn_def -> . FN IDENT LPAREN param_list RPAREN block
+
+    $end            reduce using rule 1 (program -> item_list .)
+    FN              shift and go to state 6
+
+    item                           shift and go to state 4
+    fn_def                         shift and go to state 5
+
+state 3
+
+    (3) item_list -> empty .
+
+    FN              reduce using rule 3 (item_list -> empty .)
+    $end            reduce using rule 3 (item_list -> empty .)
+
+
+state 4
+
+    (2) item_list -> item_list item .
+
+    FN              reduce using rule 2 (item_list -> item_list item .)
+    $end            reduce using rule 2 (item_list -> item_list item .)
+
+
+state 5
+
+    (4) item -> fn_def .
+
+    FN              reduce using rule 4 (item -> fn_def .)
+    $end            reduce using rule 4 (item -> fn_def .)
+
+
+state 6
+
+    (5) fn_def -> FN . IDENT LPAREN param_list RPAREN ARROW type block
+    (6) fn_def -> FN . IDENT LPAREN param_list RPAREN block
+
+    IDENT           shift and go to state 7
+
+
+state 7
+
+    (5) fn_def -> FN IDENT . LPAREN param_list RPAREN ARROW type block
+    (6) fn_def -> FN IDENT . LPAREN param_list RPAREN block
+
+    LPAREN          shift and go to state 8
+
+
+state 8
+
+    (5) fn_def -> FN IDENT LPAREN . param_list RPAREN ARROW type block
+    (6) fn_def -> FN IDENT LPAREN . param_list RPAREN block
+    (7) param_list -> . empty
+    (8) param_list -> . param
+    (9) param_list -> . param_list COMMA param
+    (73) empty -> .
+    (10) param -> . IDENT COLON type
+
+    RPAREN          reduce using rule 73 (empty -> .)
+    COMMA           reduce using rule 73 (empty -> .)
+    IDENT           shift and go to state 9
+
+    param_list                     shift and go to state 10
+    empty                          shift and go to state 11
+    param                          shift and go to state 12
+
+state 9
+
+    (10) param -> IDENT . COLON type
+
+    COLON           shift and go to state 13
+
+
+state 10
+
+    (5) fn_def -> FN IDENT LPAREN param_list . RPAREN ARROW type block
+    (6) fn_def -> FN IDENT LPAREN param_list . RPAREN block
+    (9) param_list -> param_list . COMMA param
+
+    RPAREN          shift and go to state 14
+    COMMA           shift and go to state 15
+
+
+state 11
+
+    (7) param_list -> empty .
+
+    RPAREN          reduce using rule 7 (param_list -> empty .)
+    COMMA           reduce using rule 7 (param_list -> empty .)
+
+
+state 12
+
+    (8) param_list -> param .
+
+    RPAREN          reduce using rule 8 (param_list -> param .)
+    COMMA           reduce using rule 8 (param_list -> param .)
+
+
+state 13
+
+    (10) param -> IDENT COLON . type
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 17
+
+state 14
+
+    (5) fn_def -> FN IDENT LPAREN param_list RPAREN . ARROW type block
+    (6) fn_def -> FN IDENT LPAREN param_list RPAREN . block
+    (16) block -> . LBRACE stmt_list RBRACE
+    (17) block -> . LBRACE stmt_list expr RBRACE
+
+    ARROW           shift and go to state 19
+    LBRACE          shift and go to state 21
+
+    block                          shift and go to state 20
+
+state 15
+
+    (9) param_list -> param_list COMMA . param
+    (10) param -> . IDENT COLON type
+
+    IDENT           shift and go to state 9
+
+    param                          shift and go to state 22
+
+state 16
+
+    (11) type -> IDENT .
+
+    RPAREN          reduce using rule 11 (type -> IDENT .)
+    COMMA           reduce using rule 11 (type -> IDENT .)
+    LBRACE          reduce using rule 11 (type -> IDENT .)
+    ASSIGN          reduce using rule 11 (type -> IDENT .)
+    SEMICOLON       reduce using rule 11 (type -> IDENT .)
+
+
+state 17
+
+    (10) param -> IDENT COLON type .
+
+    RPAREN          reduce using rule 10 (param -> IDENT COLON type .)
+    COMMA           reduce using rule 10 (param -> IDENT COLON type .)
+
+
+state 18
+
+    (12) type -> AMP . type
+    (13) type -> AMP . MUT type
+    (14) type -> AMP . LIFETIME type
+    (15) type -> AMP . LIFETIME MUT type
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    MUT             shift and go to state 24
+    LIFETIME        shift and go to state 25
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 23
+
+state 19
+
+    (5) fn_def -> FN IDENT LPAREN param_list RPAREN ARROW . type block
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 26
+
+state 20
+
+    (6) fn_def -> FN IDENT LPAREN param_list RPAREN block .
+
+    FN              reduce using rule 6 (fn_def -> FN IDENT LPAREN param_list RPAREN block .)
+    $end            reduce using rule 6 (fn_def -> FN IDENT LPAREN param_list RPAREN block .)
+
+
+state 21
+
+    (16) block -> LBRACE . stmt_list RBRACE
+    (17) block -> LBRACE . stmt_list expr RBRACE
+    (18) stmt_list -> . stmt_list stmt
+    (19) stmt_list -> . empty
+    (73) empty -> .
+
+    RBRACE          reduce using rule 73 (empty -> .)
+    IDENT           reduce using rule 73 (empty -> .)
+    MINUS           reduce using rule 73 (empty -> .)
+    NOT             reduce using rule 73 (empty -> .)
+    AMP             reduce using rule 73 (empty -> .)
+    INTEGER         reduce using rule 73 (empty -> .)
+    FLOAT           reduce using rule 73 (empty -> .)
+    STRING          reduce using rule 73 (empty -> .)
+    TRUE            reduce using rule 73 (empty -> .)
+    FALSE           reduce using rule 73 (empty -> .)
+    LPAREN          reduce using rule 73 (empty -> .)
+    LET             reduce using rule 73 (empty -> .)
+    RETURN          reduce using rule 73 (empty -> .)
+    IF              reduce using rule 73 (empty -> .)
+    WHILE           reduce using rule 73 (empty -> .)
+    LOOP            reduce using rule 73 (empty -> .)
+    BREAK           reduce using rule 73 (empty -> .)
+
+    stmt_list                      shift and go to state 27
+    empty                          shift and go to state 28
+
+state 22
+
+    (9) param_list -> param_list COMMA param .
+
+    RPAREN          reduce using rule 9 (param_list -> param_list COMMA param .)
+    COMMA           reduce using rule 9 (param_list -> param_list COMMA param .)
+
+
+state 23
+
+    (12) type -> AMP type .
+
+    RPAREN          reduce using rule 12 (type -> AMP type .)
+    COMMA           reduce using rule 12 (type -> AMP type .)
+    LBRACE          reduce using rule 12 (type -> AMP type .)
+    ASSIGN          reduce using rule 12 (type -> AMP type .)
+    SEMICOLON       reduce using rule 12 (type -> AMP type .)
+
+
+state 24
+
+    (13) type -> AMP MUT . type
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 29
+
+state 25
+
+    (14) type -> AMP LIFETIME . type
+    (15) type -> AMP LIFETIME . MUT type
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    MUT             shift and go to state 31
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 30
+
+state 26
+
+    (5) fn_def -> FN IDENT LPAREN param_list RPAREN ARROW type . block
+    (16) block -> . LBRACE stmt_list RBRACE
+    (17) block -> . LBRACE stmt_list expr RBRACE
+
+    LBRACE          shift and go to state 21
+
+    block                          shift and go to state 32
+
+state 27
+
+    (16) block -> LBRACE stmt_list . RBRACE
+    (17) block -> LBRACE stmt_list . expr RBRACE
+    (18) stmt_list -> stmt_list . stmt
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+    (20) stmt -> . let_stmt
+    (21) stmt -> . expr_stmt
+    (22) stmt -> . return_stmt
+    (23) stmt -> . if_stmt
+    (24) stmt -> . while_stmt
+    (25) stmt -> . loop_stmt
+    (26) stmt -> . break_stmt
+    (27) let_stmt -> . LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON
+    (34) expr_stmt -> . expr SEMICOLON
+    (35) return_stmt -> . RETURN expr SEMICOLON
+    (36) return_stmt -> . RETURN SEMICOLON
+    (37) if_stmt -> . IF expr block
+    (38) if_stmt -> . IF expr block ELSE block
+    (39) if_stmt -> . IF expr block ELSE if_stmt
+    (40) while_stmt -> . WHILE expr block
+    (41) loop_stmt -> . LOOP block
+    (42) break_stmt -> . BREAK SEMICOLON
+
+    RBRACE          shift and go to state 33
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+    LET             shift and go to state 53
+    RETURN          shift and go to state 54
+    IF              shift and go to state 55
+    WHILE           shift and go to state 56
+    LOOP            shift and go to state 57
+    BREAK           shift and go to state 58
+
+    expr                           shift and go to state 34
+    stmt                           shift and go to state 35
+    let_stmt                       shift and go to state 46
+    expr_stmt                      shift and go to state 47
+    return_stmt                    shift and go to state 48
+    if_stmt                        shift and go to state 49
+    while_stmt                     shift and go to state 50
+    loop_stmt                      shift and go to state 51
+    break_stmt                     shift and go to state 52
+
+state 28
+
+    (19) stmt_list -> empty .
+
+    RBRACE          reduce using rule 19 (stmt_list -> empty .)
+    IDENT           reduce using rule 19 (stmt_list -> empty .)
+    MINUS           reduce using rule 19 (stmt_list -> empty .)
+    NOT             reduce using rule 19 (stmt_list -> empty .)
+    AMP             reduce using rule 19 (stmt_list -> empty .)
+    INTEGER         reduce using rule 19 (stmt_list -> empty .)
+    FLOAT           reduce using rule 19 (stmt_list -> empty .)
+    STRING          reduce using rule 19 (stmt_list -> empty .)
+    TRUE            reduce using rule 19 (stmt_list -> empty .)
+    FALSE           reduce using rule 19 (stmt_list -> empty .)
+    LPAREN          reduce using rule 19 (stmt_list -> empty .)
+    LET             reduce using rule 19 (stmt_list -> empty .)
+    RETURN          reduce using rule 19 (stmt_list -> empty .)
+    IF              reduce using rule 19 (stmt_list -> empty .)
+    WHILE           reduce using rule 19 (stmt_list -> empty .)
+    LOOP            reduce using rule 19 (stmt_list -> empty .)
+    BREAK           reduce using rule 19 (stmt_list -> empty .)
+
+
+state 29
+
+    (13) type -> AMP MUT type .
+
+    RPAREN          reduce using rule 13 (type -> AMP MUT type .)
+    COMMA           reduce using rule 13 (type -> AMP MUT type .)
+    LBRACE          reduce using rule 13 (type -> AMP MUT type .)
+    ASSIGN          reduce using rule 13 (type -> AMP MUT type .)
+    SEMICOLON       reduce using rule 13 (type -> AMP MUT type .)
+
+
+state 30
+
+    (14) type -> AMP LIFETIME type .
+
+    RPAREN          reduce using rule 14 (type -> AMP LIFETIME type .)
+    COMMA           reduce using rule 14 (type -> AMP LIFETIME type .)
+    LBRACE          reduce using rule 14 (type -> AMP LIFETIME type .)
+    ASSIGN          reduce using rule 14 (type -> AMP LIFETIME type .)
+    SEMICOLON       reduce using rule 14 (type -> AMP LIFETIME type .)
+
+
+state 31
+
+    (15) type -> AMP LIFETIME MUT . type
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 59
+
+state 32
+
+    (5) fn_def -> FN IDENT LPAREN param_list RPAREN ARROW type block .
+
+    FN              reduce using rule 5 (fn_def -> FN IDENT LPAREN param_list RPAREN ARROW type block .)
+    $end            reduce using rule 5 (fn_def -> FN IDENT LPAREN param_list RPAREN ARROW type block .)
+
+
+state 33
+
+    (16) block -> LBRACE stmt_list RBRACE .
+
+    FN              reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    $end            reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    RBRACE          reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    IDENT           reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    MINUS           reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    NOT             reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    AMP             reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    INTEGER         reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    FLOAT           reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    STRING          reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    TRUE            reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    FALSE           reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    LPAREN          reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    LET             reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    RETURN          reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    IF              reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    WHILE           reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    LOOP            reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    BREAK           reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+    ELSE            reduce using rule 16 (block -> LBRACE stmt_list RBRACE .)
+
+
+state 34
+
+    (17) block -> LBRACE stmt_list expr . RBRACE
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+    (34) expr_stmt -> expr . SEMICOLON
+
+    RBRACE          shift and go to state 60
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+    SEMICOLON       shift and go to state 75
+
+
+state 35
+
+    (18) stmt_list -> stmt_list stmt .
+
+    RBRACE          reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    IDENT           reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    MINUS           reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    NOT             reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    AMP             reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    INTEGER         reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    FLOAT           reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    STRING          reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    TRUE            reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    FALSE           reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    LPAREN          reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    LET             reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    RETURN          reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    IF              reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    WHILE           reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    LOOP            reduce using rule 18 (stmt_list -> stmt_list stmt .)
+    BREAK           reduce using rule 18 (stmt_list -> stmt_list stmt .)
+
+
+state 36
+
+    (43) expr -> IDENT . ASSIGN expr
+    (66) expr -> IDENT .
+    (68) expr -> IDENT . LPAREN arg_list RPAREN
+
+    ASSIGN          shift and go to state 76
+    RBRACE          reduce using rule 66 (expr -> IDENT .)
+    OR              reduce using rule 66 (expr -> IDENT .)
+    AND             reduce using rule 66 (expr -> IDENT .)
+    EQ              reduce using rule 66 (expr -> IDENT .)
+    NEQ             reduce using rule 66 (expr -> IDENT .)
+    LT              reduce using rule 66 (expr -> IDENT .)
+    GT              reduce using rule 66 (expr -> IDENT .)
+    LEQ             reduce using rule 66 (expr -> IDENT .)
+    GEQ             reduce using rule 66 (expr -> IDENT .)
+    PLUS            reduce using rule 66 (expr -> IDENT .)
+    MINUS           reduce using rule 66 (expr -> IDENT .)
+    STAR            reduce using rule 66 (expr -> IDENT .)
+    SLASH           reduce using rule 66 (expr -> IDENT .)
+    PERCENT         reduce using rule 66 (expr -> IDENT .)
+    DOT             reduce using rule 66 (expr -> IDENT .)
+    SEMICOLON       reduce using rule 66 (expr -> IDENT .)
+    RPAREN          reduce using rule 66 (expr -> IDENT .)
+    LBRACE          reduce using rule 66 (expr -> IDENT .)
+    COMMA           reduce using rule 66 (expr -> IDENT .)
+    LPAREN          shift and go to state 77
+
+
+state 37
+
+    (57) expr -> MINUS . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 78
+
+state 38
+
+    (58) expr -> NOT . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 79
+
+state 39
+
+    (59) expr -> AMP . expr
+    (60) expr -> AMP . MUT expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    MUT             shift and go to state 81
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 80
+
+state 40
+
+    (61) expr -> INTEGER .
+
+    RBRACE          reduce using rule 61 (expr -> INTEGER .)
+    OR              reduce using rule 61 (expr -> INTEGER .)
+    AND             reduce using rule 61 (expr -> INTEGER .)
+    EQ              reduce using rule 61 (expr -> INTEGER .)
+    NEQ             reduce using rule 61 (expr -> INTEGER .)
+    LT              reduce using rule 61 (expr -> INTEGER .)
+    GT              reduce using rule 61 (expr -> INTEGER .)
+    LEQ             reduce using rule 61 (expr -> INTEGER .)
+    GEQ             reduce using rule 61 (expr -> INTEGER .)
+    PLUS            reduce using rule 61 (expr -> INTEGER .)
+    MINUS           reduce using rule 61 (expr -> INTEGER .)
+    STAR            reduce using rule 61 (expr -> INTEGER .)
+    SLASH           reduce using rule 61 (expr -> INTEGER .)
+    PERCENT         reduce using rule 61 (expr -> INTEGER .)
+    DOT             reduce using rule 61 (expr -> INTEGER .)
+    SEMICOLON       reduce using rule 61 (expr -> INTEGER .)
+    RPAREN          reduce using rule 61 (expr -> INTEGER .)
+    LBRACE          reduce using rule 61 (expr -> INTEGER .)
+    COMMA           reduce using rule 61 (expr -> INTEGER .)
+
+
+state 41
+
+    (62) expr -> FLOAT .
+
+    RBRACE          reduce using rule 62 (expr -> FLOAT .)
+    OR              reduce using rule 62 (expr -> FLOAT .)
+    AND             reduce using rule 62 (expr -> FLOAT .)
+    EQ              reduce using rule 62 (expr -> FLOAT .)
+    NEQ             reduce using rule 62 (expr -> FLOAT .)
+    LT              reduce using rule 62 (expr -> FLOAT .)
+    GT              reduce using rule 62 (expr -> FLOAT .)
+    LEQ             reduce using rule 62 (expr -> FLOAT .)
+    GEQ             reduce using rule 62 (expr -> FLOAT .)
+    PLUS            reduce using rule 62 (expr -> FLOAT .)
+    MINUS           reduce using rule 62 (expr -> FLOAT .)
+    STAR            reduce using rule 62 (expr -> FLOAT .)
+    SLASH           reduce using rule 62 (expr -> FLOAT .)
+    PERCENT         reduce using rule 62 (expr -> FLOAT .)
+    DOT             reduce using rule 62 (expr -> FLOAT .)
+    SEMICOLON       reduce using rule 62 (expr -> FLOAT .)
+    RPAREN          reduce using rule 62 (expr -> FLOAT .)
+    LBRACE          reduce using rule 62 (expr -> FLOAT .)
+    COMMA           reduce using rule 62 (expr -> FLOAT .)
+
+
+state 42
+
+    (63) expr -> STRING .
+
+    RBRACE          reduce using rule 63 (expr -> STRING .)
+    OR              reduce using rule 63 (expr -> STRING .)
+    AND             reduce using rule 63 (expr -> STRING .)
+    EQ              reduce using rule 63 (expr -> STRING .)
+    NEQ             reduce using rule 63 (expr -> STRING .)
+    LT              reduce using rule 63 (expr -> STRING .)
+    GT              reduce using rule 63 (expr -> STRING .)
+    LEQ             reduce using rule 63 (expr -> STRING .)
+    GEQ             reduce using rule 63 (expr -> STRING .)
+    PLUS            reduce using rule 63 (expr -> STRING .)
+    MINUS           reduce using rule 63 (expr -> STRING .)
+    STAR            reduce using rule 63 (expr -> STRING .)
+    SLASH           reduce using rule 63 (expr -> STRING .)
+    PERCENT         reduce using rule 63 (expr -> STRING .)
+    DOT             reduce using rule 63 (expr -> STRING .)
+    SEMICOLON       reduce using rule 63 (expr -> STRING .)
+    RPAREN          reduce using rule 63 (expr -> STRING .)
+    LBRACE          reduce using rule 63 (expr -> STRING .)
+    COMMA           reduce using rule 63 (expr -> STRING .)
+
+
+state 43
+
+    (64) expr -> TRUE .
+
+    RBRACE          reduce using rule 64 (expr -> TRUE .)
+    OR              reduce using rule 64 (expr -> TRUE .)
+    AND             reduce using rule 64 (expr -> TRUE .)
+    EQ              reduce using rule 64 (expr -> TRUE .)
+    NEQ             reduce using rule 64 (expr -> TRUE .)
+    LT              reduce using rule 64 (expr -> TRUE .)
+    GT              reduce using rule 64 (expr -> TRUE .)
+    LEQ             reduce using rule 64 (expr -> TRUE .)
+    GEQ             reduce using rule 64 (expr -> TRUE .)
+    PLUS            reduce using rule 64 (expr -> TRUE .)
+    MINUS           reduce using rule 64 (expr -> TRUE .)
+    STAR            reduce using rule 64 (expr -> TRUE .)
+    SLASH           reduce using rule 64 (expr -> TRUE .)
+    PERCENT         reduce using rule 64 (expr -> TRUE .)
+    DOT             reduce using rule 64 (expr -> TRUE .)
+    SEMICOLON       reduce using rule 64 (expr -> TRUE .)
+    RPAREN          reduce using rule 64 (expr -> TRUE .)
+    LBRACE          reduce using rule 64 (expr -> TRUE .)
+    COMMA           reduce using rule 64 (expr -> TRUE .)
+
+
+state 44
+
+    (65) expr -> FALSE .
+
+    RBRACE          reduce using rule 65 (expr -> FALSE .)
+    OR              reduce using rule 65 (expr -> FALSE .)
+    AND             reduce using rule 65 (expr -> FALSE .)
+    EQ              reduce using rule 65 (expr -> FALSE .)
+    NEQ             reduce using rule 65 (expr -> FALSE .)
+    LT              reduce using rule 65 (expr -> FALSE .)
+    GT              reduce using rule 65 (expr -> FALSE .)
+    LEQ             reduce using rule 65 (expr -> FALSE .)
+    GEQ             reduce using rule 65 (expr -> FALSE .)
+    PLUS            reduce using rule 65 (expr -> FALSE .)
+    MINUS           reduce using rule 65 (expr -> FALSE .)
+    STAR            reduce using rule 65 (expr -> FALSE .)
+    SLASH           reduce using rule 65 (expr -> FALSE .)
+    PERCENT         reduce using rule 65 (expr -> FALSE .)
+    DOT             reduce using rule 65 (expr -> FALSE .)
+    SEMICOLON       reduce using rule 65 (expr -> FALSE .)
+    RPAREN          reduce using rule 65 (expr -> FALSE .)
+    LBRACE          reduce using rule 65 (expr -> FALSE .)
+    COMMA           reduce using rule 65 (expr -> FALSE .)
+
+
+state 45
+
+    (67) expr -> LPAREN . expr RPAREN
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 82
+
+state 46
+
+    (20) stmt -> let_stmt .
+
+    RBRACE          reduce using rule 20 (stmt -> let_stmt .)
+    IDENT           reduce using rule 20 (stmt -> let_stmt .)
+    MINUS           reduce using rule 20 (stmt -> let_stmt .)
+    NOT             reduce using rule 20 (stmt -> let_stmt .)
+    AMP             reduce using rule 20 (stmt -> let_stmt .)
+    INTEGER         reduce using rule 20 (stmt -> let_stmt .)
+    FLOAT           reduce using rule 20 (stmt -> let_stmt .)
+    STRING          reduce using rule 20 (stmt -> let_stmt .)
+    TRUE            reduce using rule 20 (stmt -> let_stmt .)
+    FALSE           reduce using rule 20 (stmt -> let_stmt .)
+    LPAREN          reduce using rule 20 (stmt -> let_stmt .)
+    LET             reduce using rule 20 (stmt -> let_stmt .)
+    RETURN          reduce using rule 20 (stmt -> let_stmt .)
+    IF              reduce using rule 20 (stmt -> let_stmt .)
+    WHILE           reduce using rule 20 (stmt -> let_stmt .)
+    LOOP            reduce using rule 20 (stmt -> let_stmt .)
+    BREAK           reduce using rule 20 (stmt -> let_stmt .)
+
+
+state 47
+
+    (21) stmt -> expr_stmt .
+
+    RBRACE          reduce using rule 21 (stmt -> expr_stmt .)
+    IDENT           reduce using rule 21 (stmt -> expr_stmt .)
+    MINUS           reduce using rule 21 (stmt -> expr_stmt .)
+    NOT             reduce using rule 21 (stmt -> expr_stmt .)
+    AMP             reduce using rule 21 (stmt -> expr_stmt .)
+    INTEGER         reduce using rule 21 (stmt -> expr_stmt .)
+    FLOAT           reduce using rule 21 (stmt -> expr_stmt .)
+    STRING          reduce using rule 21 (stmt -> expr_stmt .)
+    TRUE            reduce using rule 21 (stmt -> expr_stmt .)
+    FALSE           reduce using rule 21 (stmt -> expr_stmt .)
+    LPAREN          reduce using rule 21 (stmt -> expr_stmt .)
+    LET             reduce using rule 21 (stmt -> expr_stmt .)
+    RETURN          reduce using rule 21 (stmt -> expr_stmt .)
+    IF              reduce using rule 21 (stmt -> expr_stmt .)
+    WHILE           reduce using rule 21 (stmt -> expr_stmt .)
+    LOOP            reduce using rule 21 (stmt -> expr_stmt .)
+    BREAK           reduce using rule 21 (stmt -> expr_stmt .)
+
+
+state 48
+
+    (22) stmt -> return_stmt .
+
+    RBRACE          reduce using rule 22 (stmt -> return_stmt .)
+    IDENT           reduce using rule 22 (stmt -> return_stmt .)
+    MINUS           reduce using rule 22 (stmt -> return_stmt .)
+    NOT             reduce using rule 22 (stmt -> return_stmt .)
+    AMP             reduce using rule 22 (stmt -> return_stmt .)
+    INTEGER         reduce using rule 22 (stmt -> return_stmt .)
+    FLOAT           reduce using rule 22 (stmt -> return_stmt .)
+    STRING          reduce using rule 22 (stmt -> return_stmt .)
+    TRUE            reduce using rule 22 (stmt -> return_stmt .)
+    FALSE           reduce using rule 22 (stmt -> return_stmt .)
+    LPAREN          reduce using rule 22 (stmt -> return_stmt .)
+    LET             reduce using rule 22 (stmt -> return_stmt .)
+    RETURN          reduce using rule 22 (stmt -> return_stmt .)
+    IF              reduce using rule 22 (stmt -> return_stmt .)
+    WHILE           reduce using rule 22 (stmt -> return_stmt .)
+    LOOP            reduce using rule 22 (stmt -> return_stmt .)
+    BREAK           reduce using rule 22 (stmt -> return_stmt .)
+
+
+state 49
+
+    (23) stmt -> if_stmt .
+
+    RBRACE          reduce using rule 23 (stmt -> if_stmt .)
+    IDENT           reduce using rule 23 (stmt -> if_stmt .)
+    MINUS           reduce using rule 23 (stmt -> if_stmt .)
+    NOT             reduce using rule 23 (stmt -> if_stmt .)
+    AMP             reduce using rule 23 (stmt -> if_stmt .)
+    INTEGER         reduce using rule 23 (stmt -> if_stmt .)
+    FLOAT           reduce using rule 23 (stmt -> if_stmt .)
+    STRING          reduce using rule 23 (stmt -> if_stmt .)
+    TRUE            reduce using rule 23 (stmt -> if_stmt .)
+    FALSE           reduce using rule 23 (stmt -> if_stmt .)
+    LPAREN          reduce using rule 23 (stmt -> if_stmt .)
+    LET             reduce using rule 23 (stmt -> if_stmt .)
+    RETURN          reduce using rule 23 (stmt -> if_stmt .)
+    IF              reduce using rule 23 (stmt -> if_stmt .)
+    WHILE           reduce using rule 23 (stmt -> if_stmt .)
+    LOOP            reduce using rule 23 (stmt -> if_stmt .)
+    BREAK           reduce using rule 23 (stmt -> if_stmt .)
+
+
+state 50
+
+    (24) stmt -> while_stmt .
+
+    RBRACE          reduce using rule 24 (stmt -> while_stmt .)
+    IDENT           reduce using rule 24 (stmt -> while_stmt .)
+    MINUS           reduce using rule 24 (stmt -> while_stmt .)
+    NOT             reduce using rule 24 (stmt -> while_stmt .)
+    AMP             reduce using rule 24 (stmt -> while_stmt .)
+    INTEGER         reduce using rule 24 (stmt -> while_stmt .)
+    FLOAT           reduce using rule 24 (stmt -> while_stmt .)
+    STRING          reduce using rule 24 (stmt -> while_stmt .)
+    TRUE            reduce using rule 24 (stmt -> while_stmt .)
+    FALSE           reduce using rule 24 (stmt -> while_stmt .)
+    LPAREN          reduce using rule 24 (stmt -> while_stmt .)
+    LET             reduce using rule 24 (stmt -> while_stmt .)
+    RETURN          reduce using rule 24 (stmt -> while_stmt .)
+    IF              reduce using rule 24 (stmt -> while_stmt .)
+    WHILE           reduce using rule 24 (stmt -> while_stmt .)
+    LOOP            reduce using rule 24 (stmt -> while_stmt .)
+    BREAK           reduce using rule 24 (stmt -> while_stmt .)
+
+
+state 51
+
+    (25) stmt -> loop_stmt .
+
+    RBRACE          reduce using rule 25 (stmt -> loop_stmt .)
+    IDENT           reduce using rule 25 (stmt -> loop_stmt .)
+    MINUS           reduce using rule 25 (stmt -> loop_stmt .)
+    NOT             reduce using rule 25 (stmt -> loop_stmt .)
+    AMP             reduce using rule 25 (stmt -> loop_stmt .)
+    INTEGER         reduce using rule 25 (stmt -> loop_stmt .)
+    FLOAT           reduce using rule 25 (stmt -> loop_stmt .)
+    STRING          reduce using rule 25 (stmt -> loop_stmt .)
+    TRUE            reduce using rule 25 (stmt -> loop_stmt .)
+    FALSE           reduce using rule 25 (stmt -> loop_stmt .)
+    LPAREN          reduce using rule 25 (stmt -> loop_stmt .)
+    LET             reduce using rule 25 (stmt -> loop_stmt .)
+    RETURN          reduce using rule 25 (stmt -> loop_stmt .)
+    IF              reduce using rule 25 (stmt -> loop_stmt .)
+    WHILE           reduce using rule 25 (stmt -> loop_stmt .)
+    LOOP            reduce using rule 25 (stmt -> loop_stmt .)
+    BREAK           reduce using rule 25 (stmt -> loop_stmt .)
+
+
+state 52
+
+    (26) stmt -> break_stmt .
+
+    RBRACE          reduce using rule 26 (stmt -> break_stmt .)
+    IDENT           reduce using rule 26 (stmt -> break_stmt .)
+    MINUS           reduce using rule 26 (stmt -> break_stmt .)
+    NOT             reduce using rule 26 (stmt -> break_stmt .)
+    AMP             reduce using rule 26 (stmt -> break_stmt .)
+    INTEGER         reduce using rule 26 (stmt -> break_stmt .)
+    FLOAT           reduce using rule 26 (stmt -> break_stmt .)
+    STRING          reduce using rule 26 (stmt -> break_stmt .)
+    TRUE            reduce using rule 26 (stmt -> break_stmt .)
+    FALSE           reduce using rule 26 (stmt -> break_stmt .)
+    LPAREN          reduce using rule 26 (stmt -> break_stmt .)
+    LET             reduce using rule 26 (stmt -> break_stmt .)
+    RETURN          reduce using rule 26 (stmt -> break_stmt .)
+    IF              reduce using rule 26 (stmt -> break_stmt .)
+    WHILE           reduce using rule 26 (stmt -> break_stmt .)
+    LOOP            reduce using rule 26 (stmt -> break_stmt .)
+    BREAK           reduce using rule 26 (stmt -> break_stmt .)
+
+
+state 53
+
+    (27) let_stmt -> LET . opt_mut IDENT opt_type_annotation opt_init SEMICOLON
+    (28) opt_mut -> . MUT
+    (29) opt_mut -> . empty
+    (73) empty -> .
+
+    MUT             shift and go to state 84
+    IDENT           reduce using rule 73 (empty -> .)
+
+    opt_mut                        shift and go to state 83
+    empty                          shift and go to state 85
+
+state 54
+
+    (35) return_stmt -> RETURN . expr SEMICOLON
+    (36) return_stmt -> RETURN . SEMICOLON
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    SEMICOLON       shift and go to state 87
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 86
+
+state 55
+
+    (37) if_stmt -> IF . expr block
+    (38) if_stmt -> IF . expr block ELSE block
+    (39) if_stmt -> IF . expr block ELSE if_stmt
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 88
+
+state 56
+
+    (40) while_stmt -> WHILE . expr block
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 89
+
+state 57
+
+    (41) loop_stmt -> LOOP . block
+    (16) block -> . LBRACE stmt_list RBRACE
+    (17) block -> . LBRACE stmt_list expr RBRACE
+
+    LBRACE          shift and go to state 21
+
+    block                          shift and go to state 90
+
+state 58
+
+    (42) break_stmt -> BREAK . SEMICOLON
+
+    SEMICOLON       shift and go to state 91
+
+
+state 59
+
+    (15) type -> AMP LIFETIME MUT type .
+
+    RPAREN          reduce using rule 15 (type -> AMP LIFETIME MUT type .)
+    COMMA           reduce using rule 15 (type -> AMP LIFETIME MUT type .)
+    LBRACE          reduce using rule 15 (type -> AMP LIFETIME MUT type .)
+    ASSIGN          reduce using rule 15 (type -> AMP LIFETIME MUT type .)
+    SEMICOLON       reduce using rule 15 (type -> AMP LIFETIME MUT type .)
+
+
+state 60
+
+    (17) block -> LBRACE stmt_list expr RBRACE .
+
+    FN              reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    $end            reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    RBRACE          reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    IDENT           reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    MINUS           reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    NOT             reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    AMP             reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    INTEGER         reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    FLOAT           reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    STRING          reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    TRUE            reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    FALSE           reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    LPAREN          reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    LET             reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    RETURN          reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    IF              reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    WHILE           reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    LOOP            reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    BREAK           reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+    ELSE            reduce using rule 17 (block -> LBRACE stmt_list expr RBRACE .)
+
+
+state 61
+
+    (44) expr -> expr OR . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 92
+
+state 62
+
+    (45) expr -> expr AND . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 93
+
+state 63
+
+    (46) expr -> expr EQ . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 94
+
+state 64
+
+    (47) expr -> expr NEQ . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 95
+
+state 65
+
+    (48) expr -> expr LT . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 96
+
+state 66
+
+    (49) expr -> expr GT . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 97
+
+state 67
+
+    (50) expr -> expr LEQ . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 98
+
+state 68
+
+    (51) expr -> expr GEQ . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 99
+
+state 69
+
+    (52) expr -> expr PLUS . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 100
+
+state 70
+
+    (53) expr -> expr MINUS . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 101
+
+state 71
+
+    (54) expr -> expr STAR . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 102
+
+state 72
+
+    (55) expr -> expr SLASH . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 103
+
+state 73
+
+    (56) expr -> expr PERCENT . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 104
+
+state 74
+
+    (69) expr -> expr DOT . IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 105
+
+
+state 75
+
+    (34) expr_stmt -> expr SEMICOLON .
+
+    RBRACE          reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    IDENT           reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    MINUS           reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    NOT             reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    AMP             reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    INTEGER         reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    FLOAT           reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    STRING          reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    TRUE            reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    FALSE           reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    LPAREN          reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    LET             reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    RETURN          reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    IF              reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    WHILE           reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    LOOP            reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+    BREAK           reduce using rule 34 (expr_stmt -> expr SEMICOLON .)
+
+
+state 76
+
+    (43) expr -> IDENT ASSIGN . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 106
+
+state 77
+
+    (68) expr -> IDENT LPAREN . arg_list RPAREN
+    (70) arg_list -> . empty
+    (71) arg_list -> . expr
+    (72) arg_list -> . arg_list COMMA expr
+    (73) empty -> .
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    RPAREN          reduce using rule 73 (empty -> .)
+    COMMA           reduce using rule 73 (empty -> .)
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    arg_list                       shift and go to state 107
+    empty                          shift and go to state 108
+    expr                           shift and go to state 109
+
+state 78
+
+    (57) expr -> MINUS expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 57 (expr -> MINUS expr .)
+    OR              reduce using rule 57 (expr -> MINUS expr .)
+    AND             reduce using rule 57 (expr -> MINUS expr .)
+    EQ              reduce using rule 57 (expr -> MINUS expr .)
+    NEQ             reduce using rule 57 (expr -> MINUS expr .)
+    LT              reduce using rule 57 (expr -> MINUS expr .)
+    GT              reduce using rule 57 (expr -> MINUS expr .)
+    LEQ             reduce using rule 57 (expr -> MINUS expr .)
+    GEQ             reduce using rule 57 (expr -> MINUS expr .)
+    PLUS            reduce using rule 57 (expr -> MINUS expr .)
+    MINUS           reduce using rule 57 (expr -> MINUS expr .)
+    STAR            reduce using rule 57 (expr -> MINUS expr .)
+    SLASH           reduce using rule 57 (expr -> MINUS expr .)
+    PERCENT         reduce using rule 57 (expr -> MINUS expr .)
+    SEMICOLON       reduce using rule 57 (expr -> MINUS expr .)
+    RPAREN          reduce using rule 57 (expr -> MINUS expr .)
+    LBRACE          reduce using rule 57 (expr -> MINUS expr .)
+    COMMA           reduce using rule 57 (expr -> MINUS expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 57 (expr -> MINUS expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 79
+
+    (58) expr -> NOT expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 58 (expr -> NOT expr .)
+    OR              reduce using rule 58 (expr -> NOT expr .)
+    AND             reduce using rule 58 (expr -> NOT expr .)
+    EQ              reduce using rule 58 (expr -> NOT expr .)
+    NEQ             reduce using rule 58 (expr -> NOT expr .)
+    LT              reduce using rule 58 (expr -> NOT expr .)
+    GT              reduce using rule 58 (expr -> NOT expr .)
+    LEQ             reduce using rule 58 (expr -> NOT expr .)
+    GEQ             reduce using rule 58 (expr -> NOT expr .)
+    PLUS            reduce using rule 58 (expr -> NOT expr .)
+    MINUS           reduce using rule 58 (expr -> NOT expr .)
+    STAR            reduce using rule 58 (expr -> NOT expr .)
+    SLASH           reduce using rule 58 (expr -> NOT expr .)
+    PERCENT         reduce using rule 58 (expr -> NOT expr .)
+    SEMICOLON       reduce using rule 58 (expr -> NOT expr .)
+    RPAREN          reduce using rule 58 (expr -> NOT expr .)
+    LBRACE          reduce using rule 58 (expr -> NOT expr .)
+    COMMA           reduce using rule 58 (expr -> NOT expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 58 (expr -> NOT expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 80
+
+    (59) expr -> AMP expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 59 (expr -> AMP expr .)
+    OR              reduce using rule 59 (expr -> AMP expr .)
+    AND             reduce using rule 59 (expr -> AMP expr .)
+    EQ              reduce using rule 59 (expr -> AMP expr .)
+    NEQ             reduce using rule 59 (expr -> AMP expr .)
+    LT              reduce using rule 59 (expr -> AMP expr .)
+    GT              reduce using rule 59 (expr -> AMP expr .)
+    LEQ             reduce using rule 59 (expr -> AMP expr .)
+    GEQ             reduce using rule 59 (expr -> AMP expr .)
+    PLUS            reduce using rule 59 (expr -> AMP expr .)
+    MINUS           reduce using rule 59 (expr -> AMP expr .)
+    STAR            reduce using rule 59 (expr -> AMP expr .)
+    SLASH           reduce using rule 59 (expr -> AMP expr .)
+    PERCENT         reduce using rule 59 (expr -> AMP expr .)
+    SEMICOLON       reduce using rule 59 (expr -> AMP expr .)
+    RPAREN          reduce using rule 59 (expr -> AMP expr .)
+    LBRACE          reduce using rule 59 (expr -> AMP expr .)
+    COMMA           reduce using rule 59 (expr -> AMP expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 59 (expr -> AMP expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 81
+
+    (60) expr -> AMP MUT . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 110
+
+state 82
+
+    (67) expr -> LPAREN expr . RPAREN
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RPAREN          shift and go to state 111
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+
+state 83
+
+    (27) let_stmt -> LET opt_mut . IDENT opt_type_annotation opt_init SEMICOLON
+
+    IDENT           shift and go to state 112
+
+
+state 84
+
+    (28) opt_mut -> MUT .
+
+    IDENT           reduce using rule 28 (opt_mut -> MUT .)
+
+
+state 85
+
+    (29) opt_mut -> empty .
+
+    IDENT           reduce using rule 29 (opt_mut -> empty .)
+
+
+state 86
+
+    (35) return_stmt -> RETURN expr . SEMICOLON
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    SEMICOLON       shift and go to state 113
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+
+state 87
+
+    (36) return_stmt -> RETURN SEMICOLON .
+
+    RBRACE          reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    IDENT           reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    MINUS           reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    NOT             reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    AMP             reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    INTEGER         reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    FLOAT           reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    STRING          reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    TRUE            reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    FALSE           reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    LPAREN          reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    LET             reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    RETURN          reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    IF              reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    WHILE           reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    LOOP            reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+    BREAK           reduce using rule 36 (return_stmt -> RETURN SEMICOLON .)
+
+
+state 88
+
+    (37) if_stmt -> IF expr . block
+    (38) if_stmt -> IF expr . block ELSE block
+    (39) if_stmt -> IF expr . block ELSE if_stmt
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+    (16) block -> . LBRACE stmt_list RBRACE
+    (17) block -> . LBRACE stmt_list expr RBRACE
+
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+    LBRACE          shift and go to state 21
+
+    block                          shift and go to state 114
+
+state 89
+
+    (40) while_stmt -> WHILE expr . block
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+    (16) block -> . LBRACE stmt_list RBRACE
+    (17) block -> . LBRACE stmt_list expr RBRACE
+
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+    LBRACE          shift and go to state 21
+
+    block                          shift and go to state 115
+
+state 90
+
+    (41) loop_stmt -> LOOP block .
+
+    RBRACE          reduce using rule 41 (loop_stmt -> LOOP block .)
+    IDENT           reduce using rule 41 (loop_stmt -> LOOP block .)
+    MINUS           reduce using rule 41 (loop_stmt -> LOOP block .)
+    NOT             reduce using rule 41 (loop_stmt -> LOOP block .)
+    AMP             reduce using rule 41 (loop_stmt -> LOOP block .)
+    INTEGER         reduce using rule 41 (loop_stmt -> LOOP block .)
+    FLOAT           reduce using rule 41 (loop_stmt -> LOOP block .)
+    STRING          reduce using rule 41 (loop_stmt -> LOOP block .)
+    TRUE            reduce using rule 41 (loop_stmt -> LOOP block .)
+    FALSE           reduce using rule 41 (loop_stmt -> LOOP block .)
+    LPAREN          reduce using rule 41 (loop_stmt -> LOOP block .)
+    LET             reduce using rule 41 (loop_stmt -> LOOP block .)
+    RETURN          reduce using rule 41 (loop_stmt -> LOOP block .)
+    IF              reduce using rule 41 (loop_stmt -> LOOP block .)
+    WHILE           reduce using rule 41 (loop_stmt -> LOOP block .)
+    LOOP            reduce using rule 41 (loop_stmt -> LOOP block .)
+    BREAK           reduce using rule 41 (loop_stmt -> LOOP block .)
+
+
+state 91
+
+    (42) break_stmt -> BREAK SEMICOLON .
+
+    RBRACE          reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    IDENT           reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    MINUS           reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    NOT             reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    AMP             reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    INTEGER         reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    FLOAT           reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    STRING          reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    TRUE            reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    FALSE           reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    LPAREN          reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    LET             reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    RETURN          reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    IF              reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    WHILE           reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    LOOP            reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+    BREAK           reduce using rule 42 (break_stmt -> BREAK SEMICOLON .)
+
+
+state 92
+
+    (44) expr -> expr OR expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 44 (expr -> expr OR expr .)
+    OR              reduce using rule 44 (expr -> expr OR expr .)
+    SEMICOLON       reduce using rule 44 (expr -> expr OR expr .)
+    RPAREN          reduce using rule 44 (expr -> expr OR expr .)
+    LBRACE          reduce using rule 44 (expr -> expr OR expr .)
+    COMMA           reduce using rule 44 (expr -> expr OR expr .)
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! AND             [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! EQ              [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! NEQ             [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! LT              [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! GT              [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! LEQ             [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! GEQ             [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! PLUS            [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! MINUS           [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! STAR            [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! SLASH           [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! PERCENT         [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! DOT             [ reduce using rule 44 (expr -> expr OR expr .) ]
+  ! OR              [ shift and go to state 61 ]
+
+
+state 93
+
+    (45) expr -> expr AND expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 45 (expr -> expr AND expr .)
+    OR              reduce using rule 45 (expr -> expr AND expr .)
+    AND             reduce using rule 45 (expr -> expr AND expr .)
+    SEMICOLON       reduce using rule 45 (expr -> expr AND expr .)
+    RPAREN          reduce using rule 45 (expr -> expr AND expr .)
+    LBRACE          reduce using rule 45 (expr -> expr AND expr .)
+    COMMA           reduce using rule 45 (expr -> expr AND expr .)
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! EQ              [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! NEQ             [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! LT              [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! GT              [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! LEQ             [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! GEQ             [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! PLUS            [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! MINUS           [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! STAR            [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! SLASH           [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! PERCENT         [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! DOT             [ reduce using rule 45 (expr -> expr AND expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+
+
+state 94
+
+    (46) expr -> expr EQ expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 46 (expr -> expr EQ expr .)
+    OR              reduce using rule 46 (expr -> expr EQ expr .)
+    AND             reduce using rule 46 (expr -> expr EQ expr .)
+    EQ              reduce using rule 46 (expr -> expr EQ expr .)
+    NEQ             reduce using rule 46 (expr -> expr EQ expr .)
+    SEMICOLON       reduce using rule 46 (expr -> expr EQ expr .)
+    RPAREN          reduce using rule 46 (expr -> expr EQ expr .)
+    LBRACE          reduce using rule 46 (expr -> expr EQ expr .)
+    COMMA           reduce using rule 46 (expr -> expr EQ expr .)
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! LT              [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! GT              [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! LEQ             [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! GEQ             [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! PLUS            [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! MINUS           [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! STAR            [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! SLASH           [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! PERCENT         [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! DOT             [ reduce using rule 46 (expr -> expr EQ expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+
+
+state 95
+
+    (47) expr -> expr NEQ expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 47 (expr -> expr NEQ expr .)
+    OR              reduce using rule 47 (expr -> expr NEQ expr .)
+    AND             reduce using rule 47 (expr -> expr NEQ expr .)
+    EQ              reduce using rule 47 (expr -> expr NEQ expr .)
+    NEQ             reduce using rule 47 (expr -> expr NEQ expr .)
+    SEMICOLON       reduce using rule 47 (expr -> expr NEQ expr .)
+    RPAREN          reduce using rule 47 (expr -> expr NEQ expr .)
+    LBRACE          reduce using rule 47 (expr -> expr NEQ expr .)
+    COMMA           reduce using rule 47 (expr -> expr NEQ expr .)
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! LT              [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! GT              [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! LEQ             [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! GEQ             [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! PLUS            [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! MINUS           [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! STAR            [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! SLASH           [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! PERCENT         [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! DOT             [ reduce using rule 47 (expr -> expr NEQ expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+
+
+state 96
+
+    (48) expr -> expr LT expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 48 (expr -> expr LT expr .)
+    OR              reduce using rule 48 (expr -> expr LT expr .)
+    AND             reduce using rule 48 (expr -> expr LT expr .)
+    EQ              reduce using rule 48 (expr -> expr LT expr .)
+    NEQ             reduce using rule 48 (expr -> expr LT expr .)
+    LT              reduce using rule 48 (expr -> expr LT expr .)
+    GT              reduce using rule 48 (expr -> expr LT expr .)
+    LEQ             reduce using rule 48 (expr -> expr LT expr .)
+    GEQ             reduce using rule 48 (expr -> expr LT expr .)
+    SEMICOLON       reduce using rule 48 (expr -> expr LT expr .)
+    RPAREN          reduce using rule 48 (expr -> expr LT expr .)
+    LBRACE          reduce using rule 48 (expr -> expr LT expr .)
+    COMMA           reduce using rule 48 (expr -> expr LT expr .)
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! PLUS            [ reduce using rule 48 (expr -> expr LT expr .) ]
+  ! MINUS           [ reduce using rule 48 (expr -> expr LT expr .) ]
+  ! STAR            [ reduce using rule 48 (expr -> expr LT expr .) ]
+  ! SLASH           [ reduce using rule 48 (expr -> expr LT expr .) ]
+  ! PERCENT         [ reduce using rule 48 (expr -> expr LT expr .) ]
+  ! DOT             [ reduce using rule 48 (expr -> expr LT expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+
+
+state 97
+
+    (49) expr -> expr GT expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 49 (expr -> expr GT expr .)
+    OR              reduce using rule 49 (expr -> expr GT expr .)
+    AND             reduce using rule 49 (expr -> expr GT expr .)
+    EQ              reduce using rule 49 (expr -> expr GT expr .)
+    NEQ             reduce using rule 49 (expr -> expr GT expr .)
+    LT              reduce using rule 49 (expr -> expr GT expr .)
+    GT              reduce using rule 49 (expr -> expr GT expr .)
+    LEQ             reduce using rule 49 (expr -> expr GT expr .)
+    GEQ             reduce using rule 49 (expr -> expr GT expr .)
+    SEMICOLON       reduce using rule 49 (expr -> expr GT expr .)
+    RPAREN          reduce using rule 49 (expr -> expr GT expr .)
+    LBRACE          reduce using rule 49 (expr -> expr GT expr .)
+    COMMA           reduce using rule 49 (expr -> expr GT expr .)
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! PLUS            [ reduce using rule 49 (expr -> expr GT expr .) ]
+  ! MINUS           [ reduce using rule 49 (expr -> expr GT expr .) ]
+  ! STAR            [ reduce using rule 49 (expr -> expr GT expr .) ]
+  ! SLASH           [ reduce using rule 49 (expr -> expr GT expr .) ]
+  ! PERCENT         [ reduce using rule 49 (expr -> expr GT expr .) ]
+  ! DOT             [ reduce using rule 49 (expr -> expr GT expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+
+
+state 98
+
+    (50) expr -> expr LEQ expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 50 (expr -> expr LEQ expr .)
+    OR              reduce using rule 50 (expr -> expr LEQ expr .)
+    AND             reduce using rule 50 (expr -> expr LEQ expr .)
+    EQ              reduce using rule 50 (expr -> expr LEQ expr .)
+    NEQ             reduce using rule 50 (expr -> expr LEQ expr .)
+    LT              reduce using rule 50 (expr -> expr LEQ expr .)
+    GT              reduce using rule 50 (expr -> expr LEQ expr .)
+    LEQ             reduce using rule 50 (expr -> expr LEQ expr .)
+    GEQ             reduce using rule 50 (expr -> expr LEQ expr .)
+    SEMICOLON       reduce using rule 50 (expr -> expr LEQ expr .)
+    RPAREN          reduce using rule 50 (expr -> expr LEQ expr .)
+    LBRACE          reduce using rule 50 (expr -> expr LEQ expr .)
+    COMMA           reduce using rule 50 (expr -> expr LEQ expr .)
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! PLUS            [ reduce using rule 50 (expr -> expr LEQ expr .) ]
+  ! MINUS           [ reduce using rule 50 (expr -> expr LEQ expr .) ]
+  ! STAR            [ reduce using rule 50 (expr -> expr LEQ expr .) ]
+  ! SLASH           [ reduce using rule 50 (expr -> expr LEQ expr .) ]
+  ! PERCENT         [ reduce using rule 50 (expr -> expr LEQ expr .) ]
+  ! DOT             [ reduce using rule 50 (expr -> expr LEQ expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+
+
+state 99
+
+    (51) expr -> expr GEQ expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 51 (expr -> expr GEQ expr .)
+    OR              reduce using rule 51 (expr -> expr GEQ expr .)
+    AND             reduce using rule 51 (expr -> expr GEQ expr .)
+    EQ              reduce using rule 51 (expr -> expr GEQ expr .)
+    NEQ             reduce using rule 51 (expr -> expr GEQ expr .)
+    LT              reduce using rule 51 (expr -> expr GEQ expr .)
+    GT              reduce using rule 51 (expr -> expr GEQ expr .)
+    LEQ             reduce using rule 51 (expr -> expr GEQ expr .)
+    GEQ             reduce using rule 51 (expr -> expr GEQ expr .)
+    SEMICOLON       reduce using rule 51 (expr -> expr GEQ expr .)
+    RPAREN          reduce using rule 51 (expr -> expr GEQ expr .)
+    LBRACE          reduce using rule 51 (expr -> expr GEQ expr .)
+    COMMA           reduce using rule 51 (expr -> expr GEQ expr .)
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! PLUS            [ reduce using rule 51 (expr -> expr GEQ expr .) ]
+  ! MINUS           [ reduce using rule 51 (expr -> expr GEQ expr .) ]
+  ! STAR            [ reduce using rule 51 (expr -> expr GEQ expr .) ]
+  ! SLASH           [ reduce using rule 51 (expr -> expr GEQ expr .) ]
+  ! PERCENT         [ reduce using rule 51 (expr -> expr GEQ expr .) ]
+  ! DOT             [ reduce using rule 51 (expr -> expr GEQ expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+
+
+state 100
+
+    (52) expr -> expr PLUS expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 52 (expr -> expr PLUS expr .)
+    OR              reduce using rule 52 (expr -> expr PLUS expr .)
+    AND             reduce using rule 52 (expr -> expr PLUS expr .)
+    EQ              reduce using rule 52 (expr -> expr PLUS expr .)
+    NEQ             reduce using rule 52 (expr -> expr PLUS expr .)
+    LT              reduce using rule 52 (expr -> expr PLUS expr .)
+    GT              reduce using rule 52 (expr -> expr PLUS expr .)
+    LEQ             reduce using rule 52 (expr -> expr PLUS expr .)
+    GEQ             reduce using rule 52 (expr -> expr PLUS expr .)
+    PLUS            reduce using rule 52 (expr -> expr PLUS expr .)
+    MINUS           reduce using rule 52 (expr -> expr PLUS expr .)
+    SEMICOLON       reduce using rule 52 (expr -> expr PLUS expr .)
+    RPAREN          reduce using rule 52 (expr -> expr PLUS expr .)
+    LBRACE          reduce using rule 52 (expr -> expr PLUS expr .)
+    COMMA           reduce using rule 52 (expr -> expr PLUS expr .)
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! STAR            [ reduce using rule 52 (expr -> expr PLUS expr .) ]
+  ! SLASH           [ reduce using rule 52 (expr -> expr PLUS expr .) ]
+  ! PERCENT         [ reduce using rule 52 (expr -> expr PLUS expr .) ]
+  ! DOT             [ reduce using rule 52 (expr -> expr PLUS expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+
+
+state 101
+
+    (53) expr -> expr MINUS expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 53 (expr -> expr MINUS expr .)
+    OR              reduce using rule 53 (expr -> expr MINUS expr .)
+    AND             reduce using rule 53 (expr -> expr MINUS expr .)
+    EQ              reduce using rule 53 (expr -> expr MINUS expr .)
+    NEQ             reduce using rule 53 (expr -> expr MINUS expr .)
+    LT              reduce using rule 53 (expr -> expr MINUS expr .)
+    GT              reduce using rule 53 (expr -> expr MINUS expr .)
+    LEQ             reduce using rule 53 (expr -> expr MINUS expr .)
+    GEQ             reduce using rule 53 (expr -> expr MINUS expr .)
+    PLUS            reduce using rule 53 (expr -> expr MINUS expr .)
+    MINUS           reduce using rule 53 (expr -> expr MINUS expr .)
+    SEMICOLON       reduce using rule 53 (expr -> expr MINUS expr .)
+    RPAREN          reduce using rule 53 (expr -> expr MINUS expr .)
+    LBRACE          reduce using rule 53 (expr -> expr MINUS expr .)
+    COMMA           reduce using rule 53 (expr -> expr MINUS expr .)
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! STAR            [ reduce using rule 53 (expr -> expr MINUS expr .) ]
+  ! SLASH           [ reduce using rule 53 (expr -> expr MINUS expr .) ]
+  ! PERCENT         [ reduce using rule 53 (expr -> expr MINUS expr .) ]
+  ! DOT             [ reduce using rule 53 (expr -> expr MINUS expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+
+
+state 102
+
+    (54) expr -> expr STAR expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 54 (expr -> expr STAR expr .)
+    OR              reduce using rule 54 (expr -> expr STAR expr .)
+    AND             reduce using rule 54 (expr -> expr STAR expr .)
+    EQ              reduce using rule 54 (expr -> expr STAR expr .)
+    NEQ             reduce using rule 54 (expr -> expr STAR expr .)
+    LT              reduce using rule 54 (expr -> expr STAR expr .)
+    GT              reduce using rule 54 (expr -> expr STAR expr .)
+    LEQ             reduce using rule 54 (expr -> expr STAR expr .)
+    GEQ             reduce using rule 54 (expr -> expr STAR expr .)
+    PLUS            reduce using rule 54 (expr -> expr STAR expr .)
+    MINUS           reduce using rule 54 (expr -> expr STAR expr .)
+    STAR            reduce using rule 54 (expr -> expr STAR expr .)
+    SLASH           reduce using rule 54 (expr -> expr STAR expr .)
+    PERCENT         reduce using rule 54 (expr -> expr STAR expr .)
+    SEMICOLON       reduce using rule 54 (expr -> expr STAR expr .)
+    RPAREN          reduce using rule 54 (expr -> expr STAR expr .)
+    LBRACE          reduce using rule 54 (expr -> expr STAR expr .)
+    COMMA           reduce using rule 54 (expr -> expr STAR expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 54 (expr -> expr STAR expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 103
+
+    (55) expr -> expr SLASH expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 55 (expr -> expr SLASH expr .)
+    OR              reduce using rule 55 (expr -> expr SLASH expr .)
+    AND             reduce using rule 55 (expr -> expr SLASH expr .)
+    EQ              reduce using rule 55 (expr -> expr SLASH expr .)
+    NEQ             reduce using rule 55 (expr -> expr SLASH expr .)
+    LT              reduce using rule 55 (expr -> expr SLASH expr .)
+    GT              reduce using rule 55 (expr -> expr SLASH expr .)
+    LEQ             reduce using rule 55 (expr -> expr SLASH expr .)
+    GEQ             reduce using rule 55 (expr -> expr SLASH expr .)
+    PLUS            reduce using rule 55 (expr -> expr SLASH expr .)
+    MINUS           reduce using rule 55 (expr -> expr SLASH expr .)
+    STAR            reduce using rule 55 (expr -> expr SLASH expr .)
+    SLASH           reduce using rule 55 (expr -> expr SLASH expr .)
+    PERCENT         reduce using rule 55 (expr -> expr SLASH expr .)
+    SEMICOLON       reduce using rule 55 (expr -> expr SLASH expr .)
+    RPAREN          reduce using rule 55 (expr -> expr SLASH expr .)
+    LBRACE          reduce using rule 55 (expr -> expr SLASH expr .)
+    COMMA           reduce using rule 55 (expr -> expr SLASH expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 55 (expr -> expr SLASH expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 104
+
+    (56) expr -> expr PERCENT expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 56 (expr -> expr PERCENT expr .)
+    OR              reduce using rule 56 (expr -> expr PERCENT expr .)
+    AND             reduce using rule 56 (expr -> expr PERCENT expr .)
+    EQ              reduce using rule 56 (expr -> expr PERCENT expr .)
+    NEQ             reduce using rule 56 (expr -> expr PERCENT expr .)
+    LT              reduce using rule 56 (expr -> expr PERCENT expr .)
+    GT              reduce using rule 56 (expr -> expr PERCENT expr .)
+    LEQ             reduce using rule 56 (expr -> expr PERCENT expr .)
+    GEQ             reduce using rule 56 (expr -> expr PERCENT expr .)
+    PLUS            reduce using rule 56 (expr -> expr PERCENT expr .)
+    MINUS           reduce using rule 56 (expr -> expr PERCENT expr .)
+    STAR            reduce using rule 56 (expr -> expr PERCENT expr .)
+    SLASH           reduce using rule 56 (expr -> expr PERCENT expr .)
+    PERCENT         reduce using rule 56 (expr -> expr PERCENT expr .)
+    SEMICOLON       reduce using rule 56 (expr -> expr PERCENT expr .)
+    RPAREN          reduce using rule 56 (expr -> expr PERCENT expr .)
+    LBRACE          reduce using rule 56 (expr -> expr PERCENT expr .)
+    COMMA           reduce using rule 56 (expr -> expr PERCENT expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 56 (expr -> expr PERCENT expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 105
+
+    (69) expr -> expr DOT IDENT . LPAREN arg_list RPAREN
+
+    LPAREN          shift and go to state 116
+
+
+state 106
+
+    (43) expr -> IDENT ASSIGN expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 43 (expr -> IDENT ASSIGN expr .)
+    SEMICOLON       reduce using rule 43 (expr -> IDENT ASSIGN expr .)
+    RPAREN          reduce using rule 43 (expr -> IDENT ASSIGN expr .)
+    LBRACE          reduce using rule 43 (expr -> IDENT ASSIGN expr .)
+    COMMA           reduce using rule 43 (expr -> IDENT ASSIGN expr .)
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+  ! OR              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! AND             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! EQ              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! NEQ             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! LT              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! GT              [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! LEQ             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! GEQ             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! PLUS            [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! MINUS           [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! STAR            [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! SLASH           [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! PERCENT         [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+  ! DOT             [ reduce using rule 43 (expr -> IDENT ASSIGN expr .) ]
+
+
+state 107
+
+    (68) expr -> IDENT LPAREN arg_list . RPAREN
+    (72) arg_list -> arg_list . COMMA expr
+
+    RPAREN          shift and go to state 117
+    COMMA           shift and go to state 118
+
+
+state 108
+
+    (70) arg_list -> empty .
+
+    RPAREN          reduce using rule 70 (arg_list -> empty .)
+    COMMA           reduce using rule 70 (arg_list -> empty .)
+
+
+state 109
+
+    (71) arg_list -> expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RPAREN          reduce using rule 71 (arg_list -> expr .)
+    COMMA           reduce using rule 71 (arg_list -> expr .)
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+
+state 110
+
+    (60) expr -> AMP MUT expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RBRACE          reduce using rule 60 (expr -> AMP MUT expr .)
+    OR              reduce using rule 60 (expr -> AMP MUT expr .)
+    AND             reduce using rule 60 (expr -> AMP MUT expr .)
+    EQ              reduce using rule 60 (expr -> AMP MUT expr .)
+    NEQ             reduce using rule 60 (expr -> AMP MUT expr .)
+    LT              reduce using rule 60 (expr -> AMP MUT expr .)
+    GT              reduce using rule 60 (expr -> AMP MUT expr .)
+    LEQ             reduce using rule 60 (expr -> AMP MUT expr .)
+    GEQ             reduce using rule 60 (expr -> AMP MUT expr .)
+    PLUS            reduce using rule 60 (expr -> AMP MUT expr .)
+    MINUS           reduce using rule 60 (expr -> AMP MUT expr .)
+    STAR            reduce using rule 60 (expr -> AMP MUT expr .)
+    SLASH           reduce using rule 60 (expr -> AMP MUT expr .)
+    PERCENT         reduce using rule 60 (expr -> AMP MUT expr .)
+    SEMICOLON       reduce using rule 60 (expr -> AMP MUT expr .)
+    RPAREN          reduce using rule 60 (expr -> AMP MUT expr .)
+    LBRACE          reduce using rule 60 (expr -> AMP MUT expr .)
+    COMMA           reduce using rule 60 (expr -> AMP MUT expr .)
+    DOT             shift and go to state 74
+
+  ! DOT             [ reduce using rule 60 (expr -> AMP MUT expr .) ]
+  ! OR              [ shift and go to state 61 ]
+  ! AND             [ shift and go to state 62 ]
+  ! EQ              [ shift and go to state 63 ]
+  ! NEQ             [ shift and go to state 64 ]
+  ! LT              [ shift and go to state 65 ]
+  ! GT              [ shift and go to state 66 ]
+  ! LEQ             [ shift and go to state 67 ]
+  ! GEQ             [ shift and go to state 68 ]
+  ! PLUS            [ shift and go to state 69 ]
+  ! MINUS           [ shift and go to state 70 ]
+  ! STAR            [ shift and go to state 71 ]
+  ! SLASH           [ shift and go to state 72 ]
+  ! PERCENT         [ shift and go to state 73 ]
+
+
+state 111
+
+    (67) expr -> LPAREN expr RPAREN .
+
+    RBRACE          reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    OR              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    AND             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    EQ              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    NEQ             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    LT              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    GT              reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    LEQ             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    GEQ             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    PLUS            reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    MINUS           reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    STAR            reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    SLASH           reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    PERCENT         reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    DOT             reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    SEMICOLON       reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    RPAREN          reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    LBRACE          reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+    COMMA           reduce using rule 67 (expr -> LPAREN expr RPAREN .)
+
+
+state 112
+
+    (27) let_stmt -> LET opt_mut IDENT . opt_type_annotation opt_init SEMICOLON
+    (30) opt_type_annotation -> . COLON type
+    (31) opt_type_annotation -> . empty
+    (73) empty -> .
+
+    COLON           shift and go to state 120
+    ASSIGN          reduce using rule 73 (empty -> .)
+    SEMICOLON       reduce using rule 73 (empty -> .)
+
+    opt_type_annotation            shift and go to state 119
+    empty                          shift and go to state 121
+
+state 113
+
+    (35) return_stmt -> RETURN expr SEMICOLON .
+
+    RBRACE          reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    IDENT           reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    MINUS           reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    NOT             reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    AMP             reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    INTEGER         reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    FLOAT           reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    STRING          reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    TRUE            reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    FALSE           reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    LPAREN          reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    LET             reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    RETURN          reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    IF              reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    WHILE           reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    LOOP            reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+    BREAK           reduce using rule 35 (return_stmt -> RETURN expr SEMICOLON .)
+
+
+state 114
+
+    (37) if_stmt -> IF expr block .
+    (38) if_stmt -> IF expr block . ELSE block
+    (39) if_stmt -> IF expr block . ELSE if_stmt
+
+    RBRACE          reduce using rule 37 (if_stmt -> IF expr block .)
+    IDENT           reduce using rule 37 (if_stmt -> IF expr block .)
+    MINUS           reduce using rule 37 (if_stmt -> IF expr block .)
+    NOT             reduce using rule 37 (if_stmt -> IF expr block .)
+    AMP             reduce using rule 37 (if_stmt -> IF expr block .)
+    INTEGER         reduce using rule 37 (if_stmt -> IF expr block .)
+    FLOAT           reduce using rule 37 (if_stmt -> IF expr block .)
+    STRING          reduce using rule 37 (if_stmt -> IF expr block .)
+    TRUE            reduce using rule 37 (if_stmt -> IF expr block .)
+    FALSE           reduce using rule 37 (if_stmt -> IF expr block .)
+    LPAREN          reduce using rule 37 (if_stmt -> IF expr block .)
+    LET             reduce using rule 37 (if_stmt -> IF expr block .)
+    RETURN          reduce using rule 37 (if_stmt -> IF expr block .)
+    IF              reduce using rule 37 (if_stmt -> IF expr block .)
+    WHILE           reduce using rule 37 (if_stmt -> IF expr block .)
+    LOOP            reduce using rule 37 (if_stmt -> IF expr block .)
+    BREAK           reduce using rule 37 (if_stmt -> IF expr block .)
+    ELSE            shift and go to state 122
+
+
+state 115
+
+    (40) while_stmt -> WHILE expr block .
+
+    RBRACE          reduce using rule 40 (while_stmt -> WHILE expr block .)
+    IDENT           reduce using rule 40 (while_stmt -> WHILE expr block .)
+    MINUS           reduce using rule 40 (while_stmt -> WHILE expr block .)
+    NOT             reduce using rule 40 (while_stmt -> WHILE expr block .)
+    AMP             reduce using rule 40 (while_stmt -> WHILE expr block .)
+    INTEGER         reduce using rule 40 (while_stmt -> WHILE expr block .)
+    FLOAT           reduce using rule 40 (while_stmt -> WHILE expr block .)
+    STRING          reduce using rule 40 (while_stmt -> WHILE expr block .)
+    TRUE            reduce using rule 40 (while_stmt -> WHILE expr block .)
+    FALSE           reduce using rule 40 (while_stmt -> WHILE expr block .)
+    LPAREN          reduce using rule 40 (while_stmt -> WHILE expr block .)
+    LET             reduce using rule 40 (while_stmt -> WHILE expr block .)
+    RETURN          reduce using rule 40 (while_stmt -> WHILE expr block .)
+    IF              reduce using rule 40 (while_stmt -> WHILE expr block .)
+    WHILE           reduce using rule 40 (while_stmt -> WHILE expr block .)
+    LOOP            reduce using rule 40 (while_stmt -> WHILE expr block .)
+    BREAK           reduce using rule 40 (while_stmt -> WHILE expr block .)
+
+
+state 116
+
+    (69) expr -> expr DOT IDENT LPAREN . arg_list RPAREN
+    (70) arg_list -> . empty
+    (71) arg_list -> . expr
+    (72) arg_list -> . arg_list COMMA expr
+    (73) empty -> .
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    RPAREN          reduce using rule 73 (empty -> .)
+    COMMA           reduce using rule 73 (empty -> .)
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 109
+    arg_list                       shift and go to state 123
+    empty                          shift and go to state 108
+
+state 117
+
+    (68) expr -> IDENT LPAREN arg_list RPAREN .
+
+    RBRACE          reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    OR              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    AND             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    EQ              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    NEQ             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    LT              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    GT              reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    LEQ             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    GEQ             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    PLUS            reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    MINUS           reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    STAR            reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    SLASH           reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    PERCENT         reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    DOT             reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    SEMICOLON       reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    RPAREN          reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    LBRACE          reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+    COMMA           reduce using rule 68 (expr -> IDENT LPAREN arg_list RPAREN .)
+
+
+state 118
+
+    (72) arg_list -> arg_list COMMA . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 124
+
+state 119
+
+    (27) let_stmt -> LET opt_mut IDENT opt_type_annotation . opt_init SEMICOLON
+    (32) opt_init -> . ASSIGN expr
+    (33) opt_init -> . empty
+    (73) empty -> .
+
+    ASSIGN          shift and go to state 126
+    SEMICOLON       reduce using rule 73 (empty -> .)
+
+    opt_init                       shift and go to state 125
+    empty                          shift and go to state 127
+
+state 120
+
+    (30) opt_type_annotation -> COLON . type
+    (11) type -> . IDENT
+    (12) type -> . AMP type
+    (13) type -> . AMP MUT type
+    (14) type -> . AMP LIFETIME type
+    (15) type -> . AMP LIFETIME MUT type
+
+    IDENT           shift and go to state 16
+    AMP             shift and go to state 18
+
+    type                           shift and go to state 128
+
+state 121
+
+    (31) opt_type_annotation -> empty .
+
+    ASSIGN          reduce using rule 31 (opt_type_annotation -> empty .)
+    SEMICOLON       reduce using rule 31 (opt_type_annotation -> empty .)
+
+
+state 122
+
+    (38) if_stmt -> IF expr block ELSE . block
+    (39) if_stmt -> IF expr block ELSE . if_stmt
+    (16) block -> . LBRACE stmt_list RBRACE
+    (17) block -> . LBRACE stmt_list expr RBRACE
+    (37) if_stmt -> . IF expr block
+    (38) if_stmt -> . IF expr block ELSE block
+    (39) if_stmt -> . IF expr block ELSE if_stmt
+
+    LBRACE          shift and go to state 21
+    IF              shift and go to state 55
+
+    block                          shift and go to state 129
+    if_stmt                        shift and go to state 130
+
+state 123
+
+    (69) expr -> expr DOT IDENT LPAREN arg_list . RPAREN
+    (72) arg_list -> arg_list . COMMA expr
+
+    RPAREN          shift and go to state 131
+    COMMA           shift and go to state 118
+
+
+state 124
+
+    (72) arg_list -> arg_list COMMA expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    RPAREN          reduce using rule 72 (arg_list -> arg_list COMMA expr .)
+    COMMA           reduce using rule 72 (arg_list -> arg_list COMMA expr .)
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
+
+
+state 125
+
+    (27) let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init . SEMICOLON
+
+    SEMICOLON       shift and go to state 132
+
+
+state 126
+
+    (32) opt_init -> ASSIGN . expr
+    (43) expr -> . IDENT ASSIGN expr
+    (44) expr -> . expr OR expr
+    (45) expr -> . expr AND expr
+    (46) expr -> . expr EQ expr
+    (47) expr -> . expr NEQ expr
+    (48) expr -> . expr LT expr
+    (49) expr -> . expr GT expr
+    (50) expr -> . expr LEQ expr
+    (51) expr -> . expr GEQ expr
+    (52) expr -> . expr PLUS expr
+    (53) expr -> . expr MINUS expr
+    (54) expr -> . expr STAR expr
+    (55) expr -> . expr SLASH expr
+    (56) expr -> . expr PERCENT expr
+    (57) expr -> . MINUS expr
+    (58) expr -> . NOT expr
+    (59) expr -> . AMP expr
+    (60) expr -> . AMP MUT expr
+    (61) expr -> . INTEGER
+    (62) expr -> . FLOAT
+    (63) expr -> . STRING
+    (64) expr -> . TRUE
+    (65) expr -> . FALSE
+    (66) expr -> . IDENT
+    (67) expr -> . LPAREN expr RPAREN
+    (68) expr -> . IDENT LPAREN arg_list RPAREN
+    (69) expr -> . expr DOT IDENT LPAREN arg_list RPAREN
+
+    IDENT           shift and go to state 36
+    MINUS           shift and go to state 37
+    NOT             shift and go to state 38
+    AMP             shift and go to state 39
+    INTEGER         shift and go to state 40
+    FLOAT           shift and go to state 41
+    STRING          shift and go to state 42
+    TRUE            shift and go to state 43
+    FALSE           shift and go to state 44
+    LPAREN          shift and go to state 45
+
+    expr                           shift and go to state 133
+
+state 127
+
+    (33) opt_init -> empty .
+
+    SEMICOLON       reduce using rule 33 (opt_init -> empty .)
+
+
+state 128
+
+    (30) opt_type_annotation -> COLON type .
+
+    ASSIGN          reduce using rule 30 (opt_type_annotation -> COLON type .)
+    SEMICOLON       reduce using rule 30 (opt_type_annotation -> COLON type .)
+
+
+state 129
+
+    (38) if_stmt -> IF expr block ELSE block .
+
+    RBRACE          reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    IDENT           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    MINUS           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    NOT             reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    AMP             reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    INTEGER         reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    FLOAT           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    STRING          reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    TRUE            reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    FALSE           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    LPAREN          reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    LET             reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    RETURN          reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    IF              reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    WHILE           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    LOOP            reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+    BREAK           reduce using rule 38 (if_stmt -> IF expr block ELSE block .)
+
+
+state 130
+
+    (39) if_stmt -> IF expr block ELSE if_stmt .
+
+    RBRACE          reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    IDENT           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    MINUS           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    NOT             reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    AMP             reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    INTEGER         reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    FLOAT           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    STRING          reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    TRUE            reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    FALSE           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    LPAREN          reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    LET             reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    RETURN          reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    IF              reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    WHILE           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    LOOP            reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+    BREAK           reduce using rule 39 (if_stmt -> IF expr block ELSE if_stmt .)
+
+
+state 131
+
+    (69) expr -> expr DOT IDENT LPAREN arg_list RPAREN .
+
+    RBRACE          reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    OR              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    AND             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    EQ              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    NEQ             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    LT              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    GT              reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    LEQ             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    GEQ             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    PLUS            reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    MINUS           reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    STAR            reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    SLASH           reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    PERCENT         reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    DOT             reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    SEMICOLON       reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    RPAREN          reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    LBRACE          reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+    COMMA           reduce using rule 69 (expr -> expr DOT IDENT LPAREN arg_list RPAREN .)
+
+
+state 132
+
+    (27) let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .
+
+    RBRACE          reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    IDENT           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    MINUS           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    NOT             reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    AMP             reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    INTEGER         reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    FLOAT           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    STRING          reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    TRUE            reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    FALSE           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    LPAREN          reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    LET             reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    RETURN          reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    IF              reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    WHILE           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    LOOP            reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+    BREAK           reduce using rule 27 (let_stmt -> LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON .)
+
+
+state 133
+
+    (32) opt_init -> ASSIGN expr .
+    (44) expr -> expr . OR expr
+    (45) expr -> expr . AND expr
+    (46) expr -> expr . EQ expr
+    (47) expr -> expr . NEQ expr
+    (48) expr -> expr . LT expr
+    (49) expr -> expr . GT expr
+    (50) expr -> expr . LEQ expr
+    (51) expr -> expr . GEQ expr
+    (52) expr -> expr . PLUS expr
+    (53) expr -> expr . MINUS expr
+    (54) expr -> expr . STAR expr
+    (55) expr -> expr . SLASH expr
+    (56) expr -> expr . PERCENT expr
+    (69) expr -> expr . DOT IDENT LPAREN arg_list RPAREN
+
+    SEMICOLON       reduce using rule 32 (opt_init -> ASSIGN expr .)
+    OR              shift and go to state 61
+    AND             shift and go to state 62
+    EQ              shift and go to state 63
+    NEQ             shift and go to state 64
+    LT              shift and go to state 65
+    GT              shift and go to state 66
+    LEQ             shift and go to state 67
+    GEQ             shift and go to state 68
+    PLUS            shift and go to state 69
+    MINUS           shift and go to state 70
+    STAR            shift and go to state 71
+    SLASH           shift and go to state 72
+    PERCENT         shift and go to state 73
+    DOT             shift and go to state 74
 
