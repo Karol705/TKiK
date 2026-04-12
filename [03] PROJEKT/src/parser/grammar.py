@@ -109,29 +109,26 @@ class Parser:
         """let_stmt : LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON"""
         p[0] = ('let', p[2], p[3], p[4], p[5])
 
-    def p_opt_mut_yes(self,p):
-        """opt_mut : MUT"""
-        p[0] = True
+    def p_opt_mut(self, p):
+        """opt_mut : MUT
+                | empty"""
+        p[0] = True if p[1] is not None else False
 
-    def p_opt_mut_no(self,p):
-        """opt_mut : empty"""
-        p[0] = False
+    def p_opt_type_annotation(self, p):
+        """opt_type_annotation : COLON type
+                            | empty"""
+        if len(p) == 3:
+            p[0] = p[2]
+        else:
+            p[0] = None
 
-    def p_opt_type_annotation_some(self,p):
-        """opt_type_annotation : COLON type"""
-        p[0] = p[2]
-
-    def p_opt_type_annotation_none(self,p):
-        """opt_type_annotation : empty"""
-        p[0] = None
-
-    def p_opt_init_some(self,p):
-        """opt_init : ASSIGN expr"""
-        p[0] = p[2]
-
-    def p_opt_init_none(self,p):
-        """opt_init : empty"""
-        p[0] = None
+    def p_opt_init(self, p):
+        """opt_init : ASSIGN expr
+                    | empty"""
+        if len(p) == 3:
+            p[0] = p[2]
+        else:
+            p[0] = None
         
 # CONST
     def p_const_def(self,p):

@@ -354,49 +354,51 @@ def p_stmt(p):
 #### 2.5.1 Deklaracja zmiennej (`let`)
 
 ```
-let_stmt    → 'let' IDENT ':' type '=' expr ';'
-            | 'let' IDENT '=' expr ';'
-            | 'let' 'mut' IDENT ':' type '=' expr ';'
-            | 'let' 'mut' IDENT '=' expr ';'
-            | 'let' IDENT ';'               # deklaracja bez inicjalizacji
-            | 'let' 'mut' IDENT ';'
-
 let_stmt    → 'let' opt_mut IDENT opt_type_annotation opt_init ';'
+
+opt_mut     → ε
+            | 'mut'
+
+opt_type_annotation 
+            → ε
+            | ':' type
+
+opt_init    → ε
+            | '=' expr
 ```
 
-> **Implementacyja:** Zamiast jednej dużej reguły, wygodniej zdefiniować pomocnicze reguły `opt_type` i `opt_init` — zmniejsza to liczbę kombinacji.
 
 ```python
 def p_let_stmt_full(p):
     """let_stmt : LET opt_mut IDENT opt_type_annotation opt_init SEMICOLON"""
     p[0] = ('let', p[2], p[3], p[4], p[5])
 
-def p_opt_mut_yes(p):
-    """opt_mut : MUT"""
-    p[0] = True
+def p_opt_mut(p):
+    """opt_mut : MUT
+               | empty"""
+    p[0] = True if p[1] is not None else False
 
-def p_opt_mut_no(p):
-    """opt_mut : empty"""
-    p[0] = False
+def p_opt_type_annotation(p):
+    """opt_type_annotation : COLON type
+                           | empty"""
+    if len(p) == 3:
+        p[0] = p[2]
+    else:
+        p[0] = None
 
-def p_opt_type_annotation_some(p):
-    """opt_type_annotation : COLON type"""
-    p[0] = p[2]
-
-def p_opt_type_annotation_none(p):
-    """opt_type_annotation : empty"""
-    p[0] = None
-
-def p_opt_init_some(p):
-    """opt_init : ASSIGN expr"""
-    p[0] = p[2]
-
-def p_opt_init_none(p):
-    """opt_init : empty"""
-    p[0] = None
+def p_opt_init(p):
+    """opt_init : ASSIGN expr
+                | empty"""
+    if len(p) == 3:
+        p[0] = p[2]
+    else:
+        p[0] = None
 ```
 
 ##### 2.5.1.1 Definicja `const`
+```
+const_def   → 'const' IDENT ':' type '=' expr ';'
+```
 
 ```python
 def p_const_def(p):
@@ -407,7 +409,9 @@ def p_const_def(p):
 ---
 
 ##### 2.5.1.2 Definicja `static`
-
+```
+static_def  → 'static' opt_mut IDENT ':' type '=' expr ';'
+```
 ```python
 def p_static_def(p):
     """static_def : STATIC opt_mut IDENT COLON type ASSIGN expr SEMICOLON"""
@@ -460,8 +464,6 @@ def p_if_stmt(p):
                | IF expr block ELSE if_stmt"""
     if len(p) == 4:
         p[0] = ('if', p[2], p[3], None)
-    elif isinstance(p[5], tuple) and p[5][0] == 'if':
-        p[0] = ('if', p[2], p[3], p[5])
     else:
         p[0] = ('if', p[2], p[3], p[5])
 ```
