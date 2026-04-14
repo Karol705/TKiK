@@ -124,7 +124,7 @@ t_ASSIGN  = r'='
 | `LBRACE`    | `{`    | `RBRACE` | `}`    |
 | `SEMICOLON` | `;`    | `COLON`  | `:`    |
 | `COMMA`     | `,`    | `DOT`    | `.`    |
-| `ARROW`     | `->`   | `DCOLON` | `::`   |
+| `ARROW`     | `->`   |          |        |
 
 ```python
 t_LPAREN      = r'\('
@@ -136,7 +136,6 @@ t_COLON       = r':'
 t_COMMA       = r','
 t_DOT         = r'\.'
 t_ARROW       = r'->'
-t_DCOLON      = r'::'
 ```
 
 ### 1.5 Ignorowane znaki i komentarze
@@ -182,7 +181,7 @@ tokens = [
     # Znaki przestankowe
     'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
     'SEMICOLON', 'COLON', 'COMMA', 'DOT',
-    'ARROW', 'DCOLON',
+    'ARROW',
 ] + list(reserved.values())
 ```
 
@@ -359,14 +358,13 @@ let_stmt    → 'let' opt_mut IDENT opt_type_annotation opt_init ';'
 opt_mut     → ε
             | 'mut'
 
-opt_type_annotation 
+opt_type_annotation
             → ε
             | ':' type
 
 opt_init    → ε
             | '=' expr
 ```
-
 
 ```python
 def p_let_stmt_full(p):
@@ -396,6 +394,7 @@ def p_opt_init(p):
 ```
 
 ##### 2.5.1.1 Definicja `const`
+
 ```
 const_def   → 'const' IDENT ':' type '=' expr ';'
 ```
@@ -409,9 +408,11 @@ def p_const_def(p):
 ---
 
 ##### 2.5.1.2 Definicja `static`
+
 ```
 static_def  → 'static' opt_mut IDENT ':' type '=' expr ';'
 ```
+
 ```python
 def p_static_def(p):
     """static_def : STATIC opt_mut IDENT COLON type ASSIGN expr SEMICOLON"""
@@ -750,13 +751,3 @@ fn main() {
   )
 ])
 ```
-
----
-
-## 5. Uwagi implementacyjne
-
-- **PLY buduje tabele LALR(1)** — konflikty shift/reduce rozwiązuje sekcja `precedence`. Należy ją zdefiniować przed regułami gramatyki.
-- **Kolejność funkcji `t_*`** w lekserze: PLY sortuje reguły-łańcuchy według długości (dłuższe mają wyższy priorytet), ale reguły-funkcje są przetwarzane w kolejności definicji. Funkcje dla dłuższych tokenów (`t_FLOAT`, `t_LIFETIME`) należy umieszczać przed `t_INTEGER` i `t_IDENT`.
-- **Węzły AST** są krotkam Pythona — elastyczna reprezentacja, która nie wymaga definiowania klas na tym etapie. Można je zamienić na `dataclass` lub `TypedDict` w razie potrzeby.
-- **Numeracja linii** — PLY nie śledzi jej automatycznie dla białych znaków; wymaga zliczania `\n` w `t_newline`.
-- **Testowanie leksera** niezależnie od parsera jest kluczowe — warto uruchomić `lexer.input(...)` i iterować `token()` przed podłączeniem parsera.

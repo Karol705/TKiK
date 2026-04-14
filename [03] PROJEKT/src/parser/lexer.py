@@ -26,7 +26,7 @@ class Lexer:
             'ASSIGN',
             'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
             'SEMICOLON', 'COLON', 'COMMA', 'DOT',
-            'ARROW', 'DCOLON',
+            'ARROW',
         }) + list(reserved.values())
     )
         
@@ -86,8 +86,7 @@ class Lexer:
     t_COMMA       = r','
     t_DOT         = r'\.'
     t_ARROW       = r'->'
-    t_DCOLON      = r'::'
-    
+
     # Białe znaki (spacje, tabulacje)
     t_ignore = ' \t'
 
