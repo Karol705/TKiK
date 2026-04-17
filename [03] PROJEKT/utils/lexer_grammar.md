@@ -189,7 +189,7 @@ tokens = [
 
 ### 2.2 Program i elementy najwyższego poziomu
 
-```
+```ebnf
 program     → item*
 
 item        → fn_def
@@ -224,7 +224,7 @@ def p_item(p):
 
 ### 2.3 Definicja funkcji
 
-```
+```ebnf
 fn_def      → 'fn' IDENT '(' param_list ')' return_type block
             | 'fn' IDENT '(' param_list ')' block
 
@@ -270,7 +270,7 @@ def p_param(p):
 Obsługiwane typy to typy pierwotne, referencje oraz typy nazwane (np. `String`).
 Tablice i krotki są poza zakresem projektu.
 
-```
+```ebnf
 type        → IDENT                     # i32, u64, bool, f64, String, ...
             | '&' type                  # referencja niemutowalna
             | '&' 'mut' type            # referencja mutowalna
@@ -304,7 +304,7 @@ def p_type_lifetime_mut_ref(p):
 
 ### 2.5 Blok i instrukcje
 
-```
+```ebnf
 block       → '{' stmt_list '}'
             | '{' stmt_list expr '}'    # blok z wyrażeniem końcowym
 
@@ -352,7 +352,7 @@ def p_stmt(p):
 
 #### 2.5.1 Deklaracja zmiennej (`let`)
 
-```
+```ebnf
 let_stmt    → 'let' opt_mut IDENT opt_type_annotation opt_init ';'
 
 opt_mut     → ε
@@ -395,7 +395,7 @@ def p_opt_init(p):
 
 ##### 2.5.1.1 Definicja `const`
 
-```
+```ebnf
 const_def   → 'const' IDENT ':' type '=' expr ';'
 ```
 
@@ -409,7 +409,7 @@ def p_const_def(p):
 
 ##### 2.5.1.2 Definicja `static`
 
-```
+```ebnf
 static_def  → 'static' opt_mut IDENT ':' type '=' expr ';'
 ```
 
@@ -423,7 +423,7 @@ def p_static_def(p):
 
 #### 2.5.2 Instrukcja wyrażenia
 
-```
+```ebnf
 expr_stmt   → expr ';'
 ```
 
@@ -435,7 +435,7 @@ def p_expr_stmt(p):
 
 #### 2.5.3 Instrukcja `return`
 
-```
+```ebnf
 return_stmt → 'return' expr ';'
             | 'return' ';'
 ```
@@ -452,7 +452,7 @@ def p_return_stmt(p):
 
 #### 2.5.4 Instrukcja warunkowa `if/else`
 
-```
+```ebnf
 if_stmt     → 'if' expr block
             | 'if' expr block 'else' block
             | 'if' expr block 'else' if_stmt
@@ -471,7 +471,7 @@ def p_if_stmt(p):
 
 #### 2.5.5 Pętla `while`
 
-```
+```ebnf
 while_stmt  → 'while' expr block
 ```
 
@@ -483,7 +483,7 @@ def p_while_stmt(p):
 
 #### 2.5.6 Pętla `loop` i `break`
 
-```
+```ebnf
 loop_stmt   → 'loop' block
 
 break_stmt  → 'break' ';'
@@ -518,7 +518,7 @@ Hierarchia priorytetów operatorów (od najniższego do najwyższego):
 | 9      | wywołanie funkcji, `.`             | lewostronny      |
 | 10     | literały, identyfikatory, `(expr)` | —                |
 
-```
+```ebnf
 expr            → assign_expr
 
 assign_expr     → IDENT '=' expr
