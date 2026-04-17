@@ -1,12 +1,12 @@
 # Syntax Highlighter (C)
 
-## 📌 Opis
+## Opis
 
 Program w C realizujący kolorowanie składni kodu źródłowego C poprzez analizę leksykalną i generowanie pliku HTML z odpowiednimi stylami.
 
 ---
 
-## ⚙️ Kluczowe cechy
+## Kluczowe cechy
 
 - Własny skaner leksykalny (tokenizacja kodu C)
 - Obsługa:
@@ -24,7 +24,7 @@ Program w C realizujący kolorowanie składni kodu źródłowego C poprzez anali
 
 ---
 
-## 📋 Tabela tokenów
+## Tabela tokenów
 
 Poniższa tabela przedstawia wszystkie typy tokenów rozpoznawane przez skaner leksykalny wraz z przykładami.
 
@@ -47,7 +47,7 @@ Poniższa tabela przedstawia wszystkie typy tokenów rozpoznawane przez skaner l
 
 ---
 
-## ▶️ Uruchomienie
+## Uruchomienie
 
 ```bash id="i7f1n2"
 gcc syntax_highlighter.c -o highlighter
@@ -56,7 +56,7 @@ gcc syntax_highlighter.c -o highlighter
 
 ---
 
-## 📚 Jak działa
+## Jak działa
 
 - Czyta plik znak po znaku
 - Rozpoznaje tokeny (jak w kompilatorze)
